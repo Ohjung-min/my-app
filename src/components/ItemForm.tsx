@@ -2,8 +2,10 @@
 
 // Design Ref: §3.3 — 물건 등록 화면의 입력 칸: 물건명, 진행상황, 공고번호, 물건 종류, 소재지 (* 필수)
 // + 낙찰일, 낙찰가, 매수자 이름: 낙찰·완납·등기완료를 고르면 필수(*)가 되고, 입찰·유찰이면 선택 사항으로 흐리게 보인다 (작업 11번)
+// + 같은 물건이 이미 있을 수 있으면 경고 상자와 [그래도 저장] 버튼을 보여 준다 (작업 12번)
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import StatusBadge from "@/components/StatusBadge";
 import { createItem, type ItemFormState } from "@/features/items/actions";
 import { ITEM_CATEGORIES, ITEM_STATUSES, isAwardedStatus } from "@/types/item";
 
@@ -215,6 +217,50 @@ export default function ItemForm() {
         <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           {state.formError}
         </p>
+      ) : null}
+
+      {/* 중복 경고 (작업 12번): 막지는 않고, [그래도 저장]을 눌러야 저장된다 */}
+      {state.duplicates && state.duplicates.length > 0 ? (
+        <div
+          role="alert"
+          className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900"
+        >
+          <p className="font-semibold">중복일 수 있습니다. 그래도 저장할까요?</p>
+          <p className="mt-1 text-amber-800">
+            같은 물건이 이미 등록되어 있습니다. (낙찰일이 있으면 물건명과 낙찰일이,
+            없으면 공고번호가 같을 때)
+          </p>
+          <ul className="mt-2 flex flex-col gap-1.5">
+            {state.duplicates.map((match) => (
+              <li
+                key={match.id}
+                className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-white px-3 py-2 text-zinc-900"
+              >
+                <StatusBadge status={match.status} />
+                <span className="font-medium">{match.name}</span>
+                <span className="text-zinc-600">
+                  공고번호 {match.notice_no}
+                  {match.awarded_on ? ` · 낙찰일 ${match.awarded_on}` : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 flex flex-wrap justify-end gap-2">
+            <p className="mr-auto self-center text-amber-800">
+              다른 물건이면 [그래도 저장]을, 같은 물건이면 내용을 고치거나 취소해
+              주세요.
+            </p>
+            <button
+              type="submit"
+              name="confirm_duplicate"
+              value="1"
+              disabled={pending}
+              className="rounded-md bg-amber-600 px-4 py-2 text-base font-medium text-white disabled:opacity-60"
+            >
+              그래도 저장
+            </button>
+          </div>
+        </div>
       ) : null}
 
       <div className="flex justify-end gap-2">
