@@ -21,6 +21,17 @@ export function isInProgress(status: ItemStatus): boolean {
   return IN_PROGRESS_STATUSES.includes(status);
 }
 
+/** 낙찰 이후 단계 (PRD 5번). 이 단계에서는 낙찰일·낙찰가·매수자 이름이 필수다 */
+export const AWARDED_STATUSES: readonly ItemStatus[] = [
+  "낙찰",
+  "완납",
+  "등기완료",
+];
+
+export function isAwardedStatus(status: string): boolean {
+  return (AWARDED_STATUSES as readonly string[]).includes(status);
+}
+
 /** 물건 종류 2가지 (PRD 5번) */
 export const ITEM_CATEGORIES = ["부동산", "차량"] as const;
 export type ItemCategory = (typeof ITEM_CATEGORIES)[number];

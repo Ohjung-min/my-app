@@ -2,7 +2,7 @@
 
 // Design Ref: §5 — 물건 저장은 서버에서 실행되는 동작(Server Action)으로 처리한다: 규칙 검사 → 저장
 // Design Ref: §6 — 필수 칸이 비면 저장하지 않고 칸별 오류 문구를 보여 준다. 입력한 값은 지우지 않는다
-// (중복 확인은 작업 12번, 낙찰 이후 단계의 필수 3칸 칸별 검사는 작업 11번에서 더한다)
+// 낙찰·완납·등기완료의 필수 3칸 검사는 schema.ts에 있다 (작업 11번). 중복 확인은 작업 12번에서 더한다
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { itemFormSchema, type ItemFormField } from "./schema";
