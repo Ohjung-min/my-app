@@ -5,7 +5,12 @@ import { redirect } from "next/navigation";
 import ItemsFilter from "@/components/ItemsFilter";
 import ItemsTable from "@/components/ItemsTable";
 import Pagination from "@/components/Pagination";
-import { buildListHref, hasFilters, parseFilters } from "@/features/items/list-params";
+import {
+  buildExportHref,
+  buildListHref,
+  hasFilters,
+  parseFilters,
+} from "@/features/items/list-params";
 import { getItemsPage, parsePage } from "@/features/items/queries";
 
 export type ItemsListSearchParams = {
@@ -53,10 +58,25 @@ export default async function ItemsList({
         </p>
       ) : (
         <>
-          <p className="mb-2 text-sm text-zinc-600">
-            {filtered ? "검색 결과" : "전체"}{" "}
-            {result.total.toLocaleString("ko-KR")}건
-          </p>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+            <p className="text-sm text-zinc-600">
+              {filtered ? "검색 결과" : "전체"}{" "}
+              {result.total.toLocaleString("ko-KR")}건
+            </p>
+            {/* 엑셀 내려받기 (작업 18번): 지금 보는 검색·필터 결과 전체. 일반 링크라 파일이 바로 내려온다 */}
+            <div className="text-right">
+              <a
+                href={buildExportHref(filters)}
+                className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
+              >
+                엑셀 내려받기{filtered ? " (검색 결과 전체)" : " (전체)"}
+              </a>
+              <p className="mt-1 text-xs text-zinc-500">
+                파일에는 낙찰가가 들어 있습니다. 팀 밖으로 공유하지 마세요. (매수자
+                이름은 들어가지 않습니다)
+              </p>
+            </div>
+          </div>
           <ItemsTable items={result.items} />
           <Pagination
             page={result.page}

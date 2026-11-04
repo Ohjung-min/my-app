@@ -49,6 +49,15 @@ export function buildListHref(page: number, filters: ItemFilters): string {
   return query ? `/?${query}` : "/";
 }
 
+/** 엑셀 내려받기 주소. 현재 검색·필터 조건을 담고, 쪽 번호는 담지 않는다(결과 전체를 받는다) */
+export function buildExportHref(filters: ItemFilters): string {
+  const params = new URLSearchParams();
+  if (filters.q) params.set("q", filters.q);
+  if (filters.status) params.set("status", filters.status);
+  const query = params.toString();
+  return query ? `/items/export?${query}` : "/items/export";
+}
+
 /**
  * 검색어를 LIKE 검색에 그대로 넣을 수 있게 바꾼다.
  * 사용자가 입력한 %, _, \ 는 특수문자가 아니라 글자 그대로 찾도록 앞에 \ 를 붙인다.
