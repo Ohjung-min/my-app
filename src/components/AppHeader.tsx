@@ -1,8 +1,10 @@
 // Design Ref: §3.2 — 모든 화면 위쪽에 공통으로 보이는 틀: 서비스 이름, 로그인한 이메일, [로그아웃]
-// 알림 종(🔔)은 nice 기능이라 작업 17에서 이 자리에 추가한다
+// 알림 종(🔔): 진행상황이 바뀌면 생기는 알림의 안 읽은 개수와 최근 목록 (작업 17번)
 // Plan SC: 1 — 로그인한 팀원에게만 보인다 (로그인 화면·비밀번호 설정 화면에는 나타나지 않는다)
 import Link from "next/link";
+import NotificationBell from "@/components/NotificationBell";
 import { logout } from "@/features/auth/actions";
+import { getRecentNotifications } from "@/features/notifications/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AppHeader() {
@@ -13,6 +15,9 @@ export default async function AppHeader() {
 
   // 로그인하지 않은 사람에게는 상단 틀을 보여 주지 않는다
   if (!user) return null;
+
+  // 알림 종(작업 17번): 최근 알림 20건. 불러오지 못해도 상단 틀은 그대로 보여 준다
+  const recent = await getRecentNotifications();
 
   return (
     <header className="border-b border-zinc-200 bg-white">
@@ -25,6 +30,7 @@ export default async function AppHeader() {
         </Link>
 
         <div className="flex min-w-0 items-center gap-3">
+          <NotificationBell notifications={recent.ok ? recent.items : null} />
           <span
             className="hidden max-w-[16rem] truncate text-sm text-zinc-600 sm:inline"
             title={user.email ?? undefined}
