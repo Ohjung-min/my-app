@@ -26,6 +26,7 @@ const FIELDS: ItemFormField[] = [
   "awarded_on",
   "awarded_price",
   "buyer_name",
+  "memo",
 ];
 
 export type ItemFormState = {
@@ -190,6 +191,7 @@ export async function updateItem(
       awarded_on: validated.data.awarded_on ?? null,
       awarded_price: validated.data.awarded_price ?? null,
       buyer_name: validated.data.buyer_name ?? null,
+      memo: validated.data.memo ?? null,
     })
     .eq("id", id)
     .select("id");

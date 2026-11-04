@@ -39,6 +39,7 @@ export default async function EditItemContent({
         awarded_price:
           item.awarded_price === null ? "" : String(item.awarded_price),
         buyer_name: item.buyer_name ?? "",
+        memo: item.memo ?? "",
       }}
     />
   );

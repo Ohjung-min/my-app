@@ -39,7 +39,10 @@ export type ItemForEdit = Pick<
   | "awarded_on"
   | "awarded_price"
   | "buyer_name"
->;
+> & {
+  /** 메모 (선택) */
+  memo: string | null;
+};
 
 export type ItemForEditResult =
   | { status: "found"; item: ItemForEdit }
@@ -47,7 +50,7 @@ export type ItemForEditResult =
   | { status: "error" };
 
 const EDIT_COLUMNS =
-  "id, name, status, notice_no, category, location, awarded_on, awarded_price, buyer_name";
+  "id, name, status, notice_no, category, location, awarded_on, awarded_price, buyer_name, memo";
 
 export async function getItemForEdit(id: string): Promise<ItemForEditResult> {
   // 주소의 id가 올바른 형식(UUID)이 아니면 DB에 묻지 않고 "없음"으로 본다

@@ -4,6 +4,9 @@
 import { z } from "zod";
 import { ITEM_CATEGORIES, ITEM_STATUSES, isAwardedStatus } from "@/types/item";
 
+/** 메모 최대 글자 수 */
+export const MAX_MEMO_LENGTH = 1000;
+
 /** 화면에서 넘어온 낙찰가 글자("3,200,000" 등)에서 숫자만 남긴다 */
 function cleanPrice(value: string) {
   return value.replace(/[,\s원]/g, "");
@@ -43,6 +46,14 @@ export const itemFormSchema = z.object({
       ),
   ),
   buyer_name: optional(z.string().trim()),
+
+  // 메모(선택). 개인정보를 쓰지 않도록 화면에 안내한다 (작업 14번). 너무 긴 글은 막는다
+  memo: optional(
+    z
+      .string()
+      .trim()
+      .max(MAX_MEMO_LENGTH, `메모는 ${MAX_MEMO_LENGTH}자 이하로 입력해 주세요`),
+  ),
 })
   // 낙찰·완납·등기완료이면 낙찰일·낙찰가·매수자 이름도 필수 (입찰·유찰은 비어도 된다). 작업 11번
   // 다른 칸에 오류가 있어도 이 검사가 함께 실행되어, 고칠 것을 한 번에 보여 준다 (시험으로 확인함)

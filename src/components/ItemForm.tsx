@@ -4,10 +4,12 @@
 // + 낙찰일, 낙찰가, 매수자 이름: 낙찰·완납·등기완료를 고르면 필수(*)가 되고, 입찰·유찰이면 선택 사항으로 흐리게 보인다 (작업 11번)
 // + 같은 물건이 이미 있을 수 있으면 경고 상자와 [그래도 저장] 버튼을 보여 준다 (작업 12번)
 // + 등록과 수정이 같은 폼을 쓴다: 수정은 저장 동작·버튼 글자·처음 값을 넘겨 받는다 (작업 13번)
+// + 메모(선택) 칸과, 매수자 이름 외 개인정보를 쓰지 말라는 안내 문구 (작업 14번)
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import StatusBadge from "@/components/StatusBadge";
 import { createItem, type ItemFormState } from "@/features/items/actions";
+import { MAX_MEMO_LENGTH } from "@/features/items/schema";
 import { ITEM_CATEGORIES, ITEM_STATUSES, isAwardedStatus } from "@/types/item";
 
 type ItemFormProps = {
@@ -227,6 +229,33 @@ export default function ItemForm({
           </div>
         </div>
       </div>
+
+      {/* 메모 (선택) + 개인정보 입력 금지 안내 (작업 14번, Design §3.3) */}
+      <div>
+        <label htmlFor="memo" className="mb-1 block text-sm font-medium">
+          메모 <span className="font-normal text-zinc-500">(선택, {MAX_MEMO_LENGTH}자까지)</span>
+        </label>
+        <textarea
+          id="memo"
+          name="memo"
+          rows={3}
+          defaultValue={values.memo}
+          aria-invalid={Boolean(errors.memo)}
+          aria-describedby={
+            errors.memo ? "memo-error privacy-notice" : "privacy-notice"
+          }
+          className={`${inputClass} ${borderOf("memo")}`}
+        />
+        <FieldError id="memo-error" message={errors.memo} />
+      </div>
+
+      <p
+        id="privacy-notice"
+        className="rounded-md border-l-4 border-amber-400 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+      >
+        ※ <strong>매수자 이름</strong> 외의 개인정보(연락처·주민번호·계좌번호·개인
+        주소)는 입력하지 마세요. 메모칸도 마찬가지입니다.
+      </p>
 
       {state.formError ? (
         <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
