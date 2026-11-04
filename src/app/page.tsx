@@ -13,12 +13,20 @@ export default function HomePage({
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-zinc-900">낙찰 물건 목록</h1>
-        <Link
-          href="/items/new"
-          className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
-        >
-          + 물건 등록
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/items/import"
+            className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50"
+          >
+            일괄 등록
+          </Link>
+          <Link
+            href="/items/new"
+            className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
+          >
+            + 물건 등록
+          </Link>
+        </div>
       </div>
       <Suspense
         fallback={<p className="text-sm text-zinc-500">목록을 불러오는 중...</p>}
