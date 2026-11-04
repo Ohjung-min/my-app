@@ -37,6 +37,13 @@ export async function login(
   redirect("/");
 }
 
+/** 로그아웃: 로그인 정보를 지우고 로그인 화면으로 보낸다 (Design §3.2 상단 [로그아웃]) */
+export async function logout() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
+}
+
 export type SetPasswordState = {
   /** 화면에 보여 줄 오류 문구 (없으면 오류 없음) */
   error?: string;
