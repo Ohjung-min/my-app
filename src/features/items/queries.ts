@@ -1,10 +1,12 @@
 // Design Ref: §2.3, §5 — 목록 조회는 이 파일(데이터 처리)이 맡고, 화면은 Supabase를 직접 부르지 않는다
 // Design Ref: §5 — 목록 정렬: 1순위 진행 중(입찰·낙찰·완납) 먼저 → 2순위 sort_date(낙찰일, 없으면 등록일) 최신순
 // 쪽 나누기는 이 순서대로 전체를 이어서 20건씩 자른다 (PRD 5번)
+// 물건명 검색과 진행상황 필터(작업 16번)를 적용한 결과도 같은 정렬·쪽 나누기를 쓴다
 // Plan SC: 4 — 한 화면에 20건씩, 3초 이내
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import type { ItemListRow } from "@/types/item";
+import { escapeLike, type ItemFilters } from "./list-params";
 
 /** 한 화면에 보여 주는 건수 (PRD 5번) */
 export const PAGE_SIZE = 20;
@@ -68,15 +70,29 @@ export async function getItemForEdit(id: string): Promise<ItemForEditResult> {
   return { status: "found", item: data as ItemForEdit };
 }
 
-export async function getItemsPage(page: number): Promise<ItemsPage> {
+export async function getItemsPage(
+  page: number,
+  filters: ItemFilters = {},
+): Promise<ItemsPage> {
   const supabase = await createClient();
 
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  const { data, count, error } = await supabase
+  let query = supabase
     .from("items")
-    .select(LIST_COLUMNS, { count: "exact" })
+    .select(LIST_COLUMNS, { count: "exact" });
+
+  // 물건명 검색: 대소문자 구분 없이 글자가 들어 있으면 찾는다 (작업 16번)
+  if (filters.q) {
+    query = query.ilike("name", `%${escapeLike(filters.q)}%`);
+  }
+  // 진행상황 필터: 고른 단계 하나만 (작업 16번)
+  if (filters.status) {
+    query = query.eq("status", filters.status);
+  }
+
+  const { data, count, error } = await query
     // 진행 중(true)이 먼저 오도록 내림차순
     .order("is_in_progress", { ascending: false })
     .order("sort_date", { ascending: false })

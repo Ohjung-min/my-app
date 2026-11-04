@@ -2,12 +2,13 @@
 // 주소의 ?page= 값을 읽는 부분은 Suspense로 감싸야 한다 (Next.js 16 Cache Components 규칙)
 import Link from "next/link";
 import { Suspense } from "react";
-import ItemsList from "@/components/ItemsList";
+import ItemsFilter from "@/components/ItemsFilter";
+import ItemsList, { type ItemsListSearchParams } from "@/components/ItemsList";
 
 export default function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<ItemsListSearchParams>;
 }) {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
@@ -29,7 +30,12 @@ export default function HomePage({
         </div>
       </div>
       <Suspense
-        fallback={<p className="text-sm text-zinc-500">목록을 불러오는 중...</p>}
+        fallback={
+          <>
+            <ItemsFilter filters={{}} />
+            <p className="text-sm text-zinc-500">목록을 불러오는 중...</p>
+          </>
+        }
       >
         <ItemsList searchParams={searchParams} />
       </Suspense>

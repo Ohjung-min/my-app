@@ -1,11 +1,8 @@
 // Design Ref: §3.2 — 목록 아래 쪽 번호 (‹ 1 2 3 ›), 20건씩
 import Link from "next/link";
+import { buildListHref, type ItemFilters } from "@/features/items/list-params";
 
 const WINDOW = 2; // 현재 쪽 앞뒤로 보여 줄 쪽 번호 개수
-
-function pageHref(page: number) {
-  return page === 1 ? "/" : `/?page=${page}`;
-}
 
 /** 1 … 4 5 [6] 7 8 … 20 처럼 현재 쪽 주변만 보여 주기 위한 번호 목록 */
 function visiblePages(current: number, pageCount: number): (number | "gap")[] {
@@ -23,11 +20,16 @@ function visiblePages(current: number, pageCount: number): (number | "gap")[] {
 export default function Pagination({
   page,
   pageCount,
+  filters,
 }: {
   page: number;
   pageCount: number;
+  /** 검색·필터 조건. 쪽을 옮겨도 조건이 유지되도록 링크에 함께 담는다 (작업 16번) */
+  filters: ItemFilters;
 }) {
   if (pageCount <= 1) return null;
+
+  const pageHref = (target: number) => buildListHref(target, filters);
 
   const base =
     "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-sm";
