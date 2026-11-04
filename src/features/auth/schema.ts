@@ -7,3 +7,13 @@ export const loginSchema = z.object({
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
+
+/** 비밀번호를 처음 정할 때의 규칙: 8자 이상, 두 칸이 같아야 한다 */
+export const MIN_PASSWORD_LENGTH = 8;
+
+export const setPasswordSchema = z
+  .object({
+    password: z.string().min(MIN_PASSWORD_LENGTH),
+    confirm: z.string(),
+  })
+  .refine((data) => data.password === data.confirm, { path: ["confirm"] });

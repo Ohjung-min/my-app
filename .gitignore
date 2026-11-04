@@ -40,5 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# bkit ���� ��� (�۰� ����)
+# bkit 실행 기록 (앱과 무관)
 .bkit/
+
+# 삭제 대신 옮겨 둔 파일 (사용자가 확인 후 직접 삭제)
+trash-can/
