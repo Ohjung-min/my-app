@@ -10,6 +10,17 @@ export const ITEM_STATUSES = [
 ] as const;
 export type ItemStatus = (typeof ITEM_STATUSES)[number];
 
+/** 진행 중으로 보는 단계 (PRD 5번: 입찰·낙찰·완납). 나머지(등기완료·유찰)는 종료 */
+export const IN_PROGRESS_STATUSES: readonly ItemStatus[] = [
+  "입찰",
+  "낙찰",
+  "완납",
+];
+
+export function isInProgress(status: ItemStatus): boolean {
+  return IN_PROGRESS_STATUSES.includes(status);
+}
+
 /** 물건 종류 2가지 (PRD 5번) */
 export const ITEM_CATEGORIES = ["부동산", "차량"] as const;
 export type ItemCategory = (typeof ITEM_CATEGORIES)[number];

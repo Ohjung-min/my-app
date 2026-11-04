@@ -1,5 +1,6 @@
 // Design Ref: §2.3, §5 — 목록 조회는 이 파일(데이터 처리)이 맡고, 화면은 Supabase를 직접 부르지 않는다
-// Design Ref: §5 — 목록 정렬: sort_date(낙찰일, 없으면 등록일) 최신순. 진행 중 먼저 모으기는 작업 9번에서 더한다
+// Design Ref: §5 — 목록 정렬: 1순위 진행 중(입찰·낙찰·완납) 먼저 → 2순위 sort_date(낙찰일, 없으면 등록일) 최신순
+// 쪽 나누기는 이 순서대로 전체를 이어서 20건씩 자른다 (PRD 5번)
 // Plan SC: 4 — 한 화면에 20건씩, 3초 이내
 import { createClient } from "@/lib/supabase/server";
 import type { ItemListRow } from "@/types/item";
@@ -34,8 +35,10 @@ export async function getItemsPage(page: number): Promise<ItemsPage> {
   const { data, count, error } = await supabase
     .from("items")
     .select(LIST_COLUMNS, { count: "exact" })
-    // 같은 날짜끼리는 먼저 등록한 것이 뒤로 가도록 등록 시각으로 한 번 더 정렬한다
+    // 진행 중(true)이 먼저 오도록 내림차순
+    .order("is_in_progress", { ascending: false })
     .order("sort_date", { ascending: false })
+    // 같은 날짜끼리는 먼저 등록한 것이 뒤로 가도록 등록 시각으로 한 번 더 정렬한다
     .order("created_at", { ascending: false })
     .range(from, to);
 
