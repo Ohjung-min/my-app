@@ -2,6 +2,7 @@
 // Design Ref: §5 — 목록 정렬: 1순위 진행 중(입찰·낙찰·완납) 먼저 → 2순위 sort_date(낙찰일, 없으면 등록일) 최신순
 // 쪽 나누기는 이 순서대로 전체를 이어서 20건씩 자른다 (PRD 5번)
 // Plan SC: 4 — 한 화면에 20건씩, 3초 이내
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import type { ItemListRow } from "@/types/item";
 
@@ -25,6 +26,44 @@ export type ItemsPage =
 
 const LIST_COLUMNS =
   "id, name, status, notice_no, category, location, awarded_on, awarded_price, buyer_name, sort_date";
+
+/** 수정 화면에 처음 채워 넣을 물건 한 건 (Design §3.3) */
+export type ItemForEdit = Pick<
+  ItemListRow,
+  | "id"
+  | "name"
+  | "status"
+  | "notice_no"
+  | "category"
+  | "location"
+  | "awarded_on"
+  | "awarded_price"
+  | "buyer_name"
+>;
+
+export type ItemForEditResult =
+  | { status: "found"; item: ItemForEdit }
+  | { status: "missing" }
+  | { status: "error" };
+
+const EDIT_COLUMNS =
+  "id, name, status, notice_no, category, location, awarded_on, awarded_price, buyer_name";
+
+export async function getItemForEdit(id: string): Promise<ItemForEditResult> {
+  // 주소의 id가 올바른 형식(UUID)이 아니면 DB에 묻지 않고 "없음"으로 본다
+  if (!z.uuid().safeParse(id).success) return { status: "missing" };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("items")
+    .select(EDIT_COLUMNS)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) return { status: "error" };
+  if (!data) return { status: "missing" };
+  return { status: "found", item: data as ItemForEdit };
+}
 
 export async function getItemsPage(page: number): Promise<ItemsPage> {
   const supabase = await createClient();

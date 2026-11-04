@@ -1,6 +1,7 @@
 // Design Ref: §3.2 — 물건 목록 표: 단계 배지, 물건명, 종류, 소재지, 낙찰일, 낙찰가, 매수자
 // 진행 중(입찰·낙찰·완납) 물건이 먼저 나오고, 그 뒤에 종료(등기완료·유찰) 물건이 나온다.
 // 20건씩 쪽을 나누므로, 그룹이 바뀌는 곳과 각 쪽의 첫 줄에 그룹 제목 줄을 넣는다.
+import Link from "next/link";
 import StatusBadge from "@/components/StatusBadge";
 import { isInProgress, type ItemListRow } from "@/types/item";
 
@@ -52,7 +53,15 @@ export default function ItemsTable({ items }: { items: ItemListRow[] }) {
                 <td className="whitespace-nowrap px-3 py-2">
                   <StatusBadge status={item.status} />
                 </td>
-                <td className="px-3 py-2 font-medium">{item.name}</td>
+                <td className="px-3 py-2 font-medium">
+                  {/* 물건명을 누르면 수정 화면(상세 확인 겸용)으로 간다 */}
+                  <Link
+                    href={`/items/${item.id}/edit`}
+                    className="text-zinc-900 underline-offset-2 hover:underline"
+                  >
+                    {item.name}
+                  </Link>
+                </td>
                 <td className="whitespace-nowrap px-3 py-2">{item.category}</td>
                 <td className="px-3 py-2">{item.location}</td>
                 <td className="whitespace-nowrap px-3 py-2">{item.awarded_on ?? "-"}</td>

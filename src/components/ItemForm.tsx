@@ -3,13 +3,21 @@
 // Design Ref: §3.3 — 물건 등록 화면의 입력 칸: 물건명, 진행상황, 공고번호, 물건 종류, 소재지 (* 필수)
 // + 낙찰일, 낙찰가, 매수자 이름: 낙찰·완납·등기완료를 고르면 필수(*)가 되고, 입찰·유찰이면 선택 사항으로 흐리게 보인다 (작업 11번)
 // + 같은 물건이 이미 있을 수 있으면 경고 상자와 [그래도 저장] 버튼을 보여 준다 (작업 12번)
+// + 등록과 수정이 같은 폼을 쓴다: 수정은 저장 동작·버튼 글자·처음 값을 넘겨 받는다 (작업 13번)
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import StatusBadge from "@/components/StatusBadge";
 import { createItem, type ItemFormState } from "@/features/items/actions";
 import { ITEM_CATEGORIES, ITEM_STATUSES, isAwardedStatus } from "@/types/item";
 
-const initialState: ItemFormState = {};
+type ItemFormProps = {
+  /** 저장 동작. 등록은 createItem(기본), 수정은 updateItem을 id와 묶어서(bind) 넘긴다 */
+  action?: (state: ItemFormState, formData: FormData) => Promise<ItemFormState>;
+  /** 저장 버튼 글자 */
+  submitLabel?: string;
+  /** 수정 화면에서 처음에 채워 넣을 값 */
+  initialValues?: ItemFormState["values"];
+};
 
 const inputClass =
   "w-full rounded-md border bg-white px-3 py-2 text-base text-zinc-900 outline-none focus:border-zinc-900";
@@ -23,8 +31,15 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export default function ItemForm() {
-  const [state, formAction, pending] = useActionState(createItem, initialState);
+export default function ItemForm({
+  action = createItem,
+  submitLabel = "저장",
+  initialValues,
+}: ItemFormProps) {
+  const [state, formAction, pending] = useActionState<ItemFormState, FormData>(
+    action,
+    { values: initialValues },
+  );
   const errors = state.errors ?? {};
   const values = state.values ?? {};
 
@@ -275,7 +290,7 @@ export default function ItemForm() {
           disabled={pending}
           className="rounded-md bg-zinc-900 px-4 py-2 text-base font-medium text-white disabled:opacity-60"
         >
-          {pending ? "저장 중..." : "저장"}
+          {pending ? "저장 중..." : submitLabel}
         </button>
       </div>
     </form>
