@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 공매 낙찰 물건 한눈에
 
-## Getting Started
+공매로 낙찰된 물건을 한 화면에서 보고, 입찰부터 등기완료까지 **진행상황을 팀이 함께 관리**하는 웹 앱입니다.
+메모·엑셀·메신저에 흩어져 있던 낙찰 정보를 한곳에 모아 **물건 누락을 줄이고** 같은 질문이 반복되는 일을 없애려고 만들었습니다.
 
-First, run the development server:
+- **배포 주소:** https://my-app-mu-sooty-24.vercel.app
+- **로그인 없이** 주소를 아는 누구나 쓰는 서비스입니다. (아래 "주의" 참고)
+
+## 주요 기능
+
+**꼭 필요한 기능 (must)**
+- **물건 등록·진행상황 관리:** 관리번호, 소재지, 진행상황, 물건 종류(부동산·차량)를 입력합니다. 진행상황은 `입찰 / 낙찰 / 완납 / 등기소 접수 / 등기완료 / 유찰` 6단계이고 어느 단계로든 바꿀 수 있습니다. 낙찰 이후 단계에서는 낙찰일·낙찰가·매수자 이름도 필수입니다. 같은 소재지와 낙찰일이 이미 있으면 "중복일 수 있다"고 경고합니다.
+- **물건별 진행상황 조회:** 첫 화면에서 진행상황별 건수를 보고, 목록에서 최신 낙찰일 순으로 20건씩 봅니다. 진행 중인 물건은 맨 위에 따로 모아 보여 줍니다.
+
+**있으면 좋은 기능 (nice)**
+- 낙찰 결과 **일괄 등록** (붙여넣기 또는 엑셀·CSV 파일, 이미 있는 물건은 건너뜀)
+- 진행상황 **필터**와 관리번호·소재지 **검색**
+- 진행상황이 바뀌면 상단 종 모양에 **알림**
+- 현재 목록을 **엑셀로 내려받기** (매수자 이름 열은 제외)
+
+## 기술 스택
+
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Supabase(데이터 저장) · Vercel(배포)
+
+## 직접 실행하기
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # 배포용 빌드
+npm run lint    # 코드 검사
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+실행하려면 프로젝트 폴더에 `.env` 파일을 만들고 Supabase 주소와 공개 키를 넣어야 합니다. (`.env`는 저장소에 올라가지 않습니다)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+데이터베이스 구조는 `supabase/migrations/` 폴더의 SQL 파일에 있습니다.
 
-## Learn More
+## 폴더 구조
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/app/          화면 (첫 화면 /, 목록 /items, 등록·수정·일괄 등록·엑셀)
+src/components/   화면 조각 (표, 배지, 입력 폼, 알림 종 등)
+src/features/     물건·알림 데이터 처리와 규칙
+src/lib/supabase/ Supabase 접속 코드
+src/types/        데이터 모양
+supabase/         데이터베이스 변경 기록(마이그레이션)
+samples/          일괄 등록 시험용 가짜 데이터 엑셀
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 기획 문서
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [PRD.md](PRD.md) — 기획서: 문제, 목표, 기능, 범위, 보안·개인정보
+- [PLAN.md](PLAN.md) — 계획서: 성공 기준과 작업 순서
+- [DESIGN.md](DESIGN.md) — 설계서: 화면, 데이터, 서버 동작, 시험 계획
 
-## Deploy on Vercel
+## 만들지 않은 것
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+공매 사이트 자동 가져오기, AI 낙찰 예측, 결제, 물건 삭제, 변경 이력, 모바일 앱, 여러 팀 공용 기능은 이번 범위에서 제외했습니다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 주의
+
+- 로그인이 없으므로 **주소를 아는 누구나** 낙찰가와 매수자 이름을 보고 물건을 등록·수정할 수 있습니다. 삭제는 데이터베이스가 막습니다. 주소는 팀 밖에 공유하지 마세요.
+- 물건 데이터의 개인정보는 **매수자 이름만** 저장합니다. 연락처·주민번호·계좌번호·개인 주소는 입력하지 마세요.
+- 화면의 캠코 로고는 비공식으로 사용한 것이며, 이 앱은 캠코와 직접 관련이 없습니다.
