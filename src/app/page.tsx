@@ -8,13 +8,14 @@ import { buildListHref } from "@/features/items/list-params";
 import { ITEM_STATUSES, type ItemStatus } from "@/types/item";
 
 // 카드 색: 목록의 진행상황 배지 색과 같은 계열
+// 입체감: 위에서 아래로 번지는 그라데이션 + 위쪽 밝은 선 + 아래쪽 굵은 색 테두리 + 그림자
 const CARD_STYLES: Record<ItemStatus, string> = {
-  입찰: "border-zinc-300 text-zinc-700",
-  낙찰: "border-blue-300 text-blue-700",
-  완납: "border-orange-300 text-orange-700",
-  "등기소 접수": "border-violet-300 text-violet-700",
-  등기완료: "border-green-300 text-green-700",
-  유찰: "border-red-300 text-red-700",
+  입찰: "from-white to-zinc-200 border-zinc-400 text-zinc-800 shadow-zinc-400/60",
+  낙찰: "from-sky-50 to-blue-200 border-blue-500 text-blue-900 shadow-blue-400/60",
+  완납: "from-amber-50 to-orange-200 border-orange-500 text-orange-900 shadow-orange-400/60",
+  "등기소 접수": "from-violet-50 to-violet-200 border-violet-500 text-violet-900 shadow-violet-400/60",
+  등기완료: "from-emerald-50 to-green-200 border-green-600 text-green-900 shadow-green-400/60",
+  유찰: "from-rose-50 to-red-200 border-red-500 text-red-900 shadow-red-400/60",
 };
 
 async function StatusCards() {
@@ -37,12 +38,12 @@ async function StatusCards() {
           <li key={status}>
             <Link
               href={buildListHref(1, { status })}
-              className={`block rounded-lg border-2 bg-white px-4 py-4 shadow-sm transition hover:shadow-md ${CARD_STYLES[status]}`}
+              className={`flex flex-nowrap items-baseline justify-center gap-x-2 whitespace-nowrap rounded-xl border-2 border-b-[6px] bg-gradient-to-b px-2 py-5 shadow-lg sm:gap-x-3 sm:px-5 ring-1 ring-inset ring-white/70 transition hover:-translate-y-1 hover:shadow-xl active:translate-y-0.5 active:border-b-2 ${CARD_STYLES[status]}`}
             >
-              <span className="block text-sm font-medium">{status}</span>
-              <span className="mt-1 block text-3xl font-bold">
+              <span className="text-base font-bold min-[480px]:text-xl sm:text-2xl">{status}</span>
+              <span className="text-2xl font-extrabold min-[480px]:text-3xl sm:text-4xl">
                 {result.counts[status]}
-                <span className="ml-1 text-base font-normal">건</span>
+                <span className="ml-1 text-base font-semibold sm:text-lg">건</span>
               </span>
             </Link>
           </li>
