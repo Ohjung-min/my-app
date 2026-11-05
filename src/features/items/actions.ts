@@ -171,7 +171,7 @@ export async function createItem(
   const { error } = await supabase.from("items").insert(validated.data);
   if (error) return saveErrorState(error, values);
 
-  redirect("/");
+  redirect("/items");
 }
 
 /** 물건 수정 (Design §3.3 /items/[id]/edit). 첫 인자 id는 화면에서 bind로 미리 넣는다 */
@@ -228,5 +228,5 @@ export async function updateItem(
   // 진행상황이 바뀌면 데이터베이스가 알림을 남긴다. 상단 알림 종은 모든 화면에 공통인 틀이라
   // 목록으로 이동만 해서는 갱신되지 않으므로, 화면 캐시를 새로 고쳐 바뀐 알림 개수를 바로 보이게 한다
   refresh();
-  redirect("/");
+  redirect("/items");
 }

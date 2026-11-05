@@ -293,7 +293,7 @@ export default function ItemForm({
 
       <div className="flex justify-end gap-2">
         <Link
-          href="/"
+          href="/items"
           className="rounded-md border border-zinc-300 px-4 py-2 text-base text-zinc-700 hover:bg-zinc-50"
         >
           취소

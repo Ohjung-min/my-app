@@ -7,7 +7,7 @@ import { ITEM_STATUSES } from "@/types/item";
 export default function ItemsFilter({ filters }: { filters: ItemFilters }) {
   return (
     <form
-      action="/"
+      action="/items"
       method="get"
       role="search"
       className="mb-4 flex flex-wrap items-end gap-2"
@@ -55,7 +55,7 @@ export default function ItemsFilter({ filters }: { filters: ItemFilters }) {
 
       {hasFilters(filters) ? (
         <Link
-          href="/"
+          href="/items"
           className="px-1 py-2 text-sm text-zinc-600 underline underline-offset-2"
         >
           조건 지우기

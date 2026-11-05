@@ -5,7 +5,7 @@
 // Plan SC: 4 — 한 화면에 20건씩, 3초 이내
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import type { ItemListRow } from "@/types/item";
+import { ITEM_STATUSES, type ItemListRow, type ItemStatus } from "@/types/item";
 import { buildSearchFilter, type ItemFilters } from "./list-params";
 
 /** 한 화면에 보여 주는 건수 (PRD 5번) */
@@ -25,6 +25,32 @@ export function getPageCount(total: number): number {
 export type ItemsPage =
   | { ok: true; items: ItemListRow[]; total: number; page: number; pageCount: number }
   | { ok: false };
+
+export type StatusCounts =
+  | { ok: true; total: number; counts: Record<ItemStatus, number> }
+  | { ok: false };
+
+/** 첫 화면용: 진행상황별 물건 건수. 물건 내용은 가져오지 않고 건수만 센다 */
+export async function getStatusCounts(): Promise<StatusCounts> {
+  const supabase = await createClient();
+  const results = await Promise.all(
+    ITEM_STATUSES.map((status) =>
+      supabase
+        .from("items")
+        .select("id", { count: "exact", head: true })
+        .eq("status", status),
+    ),
+  );
+  if (results.some((r) => r.error)) return { ok: false };
+
+  const counts = {} as Record<ItemStatus, number>;
+  let total = 0;
+  ITEM_STATUSES.forEach((status, i) => {
+    counts[status] = results[i].count ?? 0;
+    total += counts[status];
+  });
+  return { ok: true, total, counts };
+}
 
 const LIST_COLUMNS =
   "id, status, notice_no, category, location, awarded_on, awarded_price, buyer_name, sort_date";

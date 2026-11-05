@@ -78,7 +78,7 @@ function PreviewResult({
           </p>
         ) : null}
         <Link
-          href="/"
+          href="/items"
           className="mt-3 inline-block rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-base font-medium text-white"
         >
           목록으로
@@ -279,7 +279,7 @@ export default function ImportForm() {
 
         <div className="flex justify-end gap-2">
           <Link
-            href="/"
+            href="/items"
             className="rounded-md border border-zinc-300 px-4 py-2 text-base text-zinc-700 hover:bg-zinc-50"
           >
             취소

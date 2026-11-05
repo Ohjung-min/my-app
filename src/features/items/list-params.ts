@@ -39,14 +39,14 @@ export function hasFilters(filters: ItemFilters): boolean {
   return Boolean(filters.q || filters.status);
 }
 
-/** 조건과 쪽 번호를 담은 목록 주소. 1쪽은 ?page를 생략하고, 조건이 없으면 "/" */
+/** 조건과 쪽 번호를 담은 목록 주소. 1쪽은 ?page를 생략하고, 조건이 없으면 "/items" */
 export function buildListHref(page: number, filters: ItemFilters): string {
   const params = new URLSearchParams();
   if (filters.q) params.set("q", filters.q);
   if (filters.status) params.set("status", filters.status);
   if (page > 1) params.set("page", String(page));
   const query = params.toString();
-  return query ? `/?${query}` : "/";
+  return query ? `/items?${query}` : "/items";
 }
 
 /** 엑셀 내려받기 주소. 현재 검색·필터 조건을 담고, 쪽 번호는 담지 않는다(결과 전체를 받는다) */
