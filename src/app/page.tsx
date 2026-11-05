@@ -7,15 +7,15 @@ import { getStatusCounts } from "@/features/items/queries";
 import { buildListHref } from "@/features/items/list-params";
 import { ITEM_STATUSES, type ItemStatus } from "@/types/item";
 
-// 카드 색: 채도를 낮춘 깊은 톤(슬레이트·네이비·구리·인디고·청록·와인)에 흰 글자
-// 입체감: 위→아래 그라데이션 + 위쪽 은은한 하이라이트(안쪽 테두리) + 아래쪽 어두운 두께 + 같은 계열 그림자
+// 카드 색: 연한 파스텔 바탕(슬레이트·블루·피치·라벤더·민트·로즈)에 같은 계열의 진한 글자
+// 입체감: 위→아래 그라데이션 + 위쪽 흰 하이라이트(안쪽 테두리) + 아래쪽 색 두께 + 같은 계열 그림자
 const CARD_STYLES: Record<ItemStatus, string> = {
-  입찰: "from-[#7b8794] to-[#52606d] border-[#3e4c59] shadow-[#52606d]/40",
-  낙찰: "from-[#3b6cc4] to-[#1f4690] border-[#16336b] shadow-[#1f4690]/40",
-  완납: "from-[#e39a4b] to-[#c0732a] border-[#8f531a] shadow-[#c0732a]/40",
-  "등기소 접수": "from-[#8269d4] to-[#5a44ac] border-[#42317f] shadow-[#5a44ac]/40",
-  등기완료: "from-[#35a885] to-[#1f7a5f] border-[#175a46] shadow-[#1f7a5f]/40",
-  유찰: "from-[#d9605c] to-[#a8322f] border-[#7c2220] shadow-[#a8322f]/40",
+  입찰: "from-[#f1f4f7] to-[#d5dce4] border-[#aab4c0] text-[#3e4c59] shadow-[#8896a5]/30",
+  낙찰: "from-[#eaf1fc] to-[#c4d7f5] border-[#8fb0e6] text-[#1f4690] shadow-[#6d96dc]/30",
+  완납: "from-[#fff2e3] to-[#fbd9b0] border-[#eab073] text-[#9a5a14] shadow-[#e39a4b]/30",
+  "등기소 접수": "from-[#f1edfc] to-[#d8cff3] border-[#b2a3e3] text-[#4a3796] shadow-[#8f7bd8]/30",
+  등기완료: "from-[#e8f7f1] to-[#bfe8d8] border-[#82cbb0] text-[#1b6a52] shadow-[#4fb592]/30",
+  유찰: "from-[#fdeeee] to-[#f6cccb] border-[#e59a97] text-[#9a2b28] shadow-[#d9605c]/30",
 };
 
 async function StatusCards() {
@@ -38,7 +38,7 @@ async function StatusCards() {
           <li key={status}>
             <Link
               href={buildListHref(1, { status })}
-              className={`flex flex-nowrap items-baseline justify-center gap-x-2 whitespace-nowrap rounded-2xl border border-b-[6px] bg-gradient-to-b px-2 py-6 text-white shadow-xl sm:gap-x-3 sm:px-5 ring-1 ring-inset ring-white/30 transition hover:-translate-y-1 hover:brightness-110 active:translate-y-0.5 active:border-b-2 ${CARD_STYLES[status]}`}
+              className={`flex flex-nowrap items-baseline justify-center gap-x-2 whitespace-nowrap rounded-2xl border border-b-[6px] bg-gradient-to-b px-2 py-6 shadow-lg sm:gap-x-3 sm:px-5 ring-1 ring-inset ring-white/80 transition hover:-translate-y-1 hover:shadow-xl active:translate-y-0.5 active:border-b-2 ${CARD_STYLES[status]}`}
             >
               <span className="text-base font-bold min-[480px]:text-xl sm:text-2xl">{status}</span>
               <span className="text-2xl font-extrabold min-[480px]:text-3xl sm:text-4xl">
