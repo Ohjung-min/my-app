@@ -12,7 +12,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="mt-6 inline-block rounded-md bg-zinc-900 px-4 py-2 text-base font-medium text-white"
+        className="mt-6 inline-block rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-base font-medium text-white"
       >
         목록으로 가기
       </Link>

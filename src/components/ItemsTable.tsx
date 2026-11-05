@@ -21,7 +21,7 @@ export default function ItemsTable({ items }: { items: ItemListRow[] }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-zinc-200 bg-white">
       <table className="w-full min-w-[40rem] text-left text-sm">
-        <thead className="bg-zinc-50 text-zinc-600">
+        <thead className="bg-[#eaf0fa] text-[#183a76]">
           <tr>
             <th scope="col" className="px-3 py-2 font-medium">관리번호 / 소재지</th>
             <th scope="col" className="px-3 py-2 font-medium">단계</th>

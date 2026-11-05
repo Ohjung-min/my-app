@@ -23,7 +23,7 @@ export default function HomePage({
           </Link>
           <Link
             href="/items/new"
-            className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
+            className="rounded-md bg-[#183a76] hover:bg-[#122c5a] px-3 py-2 text-sm font-medium text-white"
           >
             + 물건 등록
           </Link>

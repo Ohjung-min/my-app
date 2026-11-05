@@ -79,7 +79,7 @@ function PreviewResult({
         ) : null}
         <Link
           href="/"
-          className="mt-3 inline-block rounded-md bg-zinc-900 px-4 py-2 text-base font-medium text-white"
+          className="mt-3 inline-block rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-base font-medium text-white"
         >
           목록으로
         </Link>
@@ -107,7 +107,7 @@ function PreviewResult({
 
       <div className="overflow-x-auto rounded-lg border border-zinc-200 bg-white">
         <table className="w-full min-w-[32rem] text-left text-sm">
-          <thead className="bg-zinc-50 text-zinc-600">
+          <thead className="bg-[#eaf0fa] text-[#183a76]">
             <tr>
               <th scope="col" className="px-3 py-2 font-medium">줄</th>
               <th scope="col" className="px-3 py-2 font-medium">결과</th>
@@ -156,7 +156,7 @@ function PreviewResult({
         <button
           type="submit"
           disabled={counts.ok === 0 || committing}
-          className="rounded-md bg-zinc-900 px-4 py-2 text-base font-medium text-white disabled:opacity-60"
+          className="rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-base font-medium text-white disabled:opacity-60"
         >
           {committing ? "등록 중..." : `${counts.ok}건 등록`}
         </button>
@@ -233,7 +233,7 @@ export default function ImportForm() {
             onChange={(event) => setPasted(event.target.value)}
             maxLength={MAX_IMPORT_TEXT_LENGTH}
             placeholder={IMPORT_COLUMNS.map((c) => c.label).join("\t")}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-mono text-sm text-zinc-900 outline-none focus:border-zinc-900"
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-mono text-sm text-zinc-900 outline-none focus:border-[#183a76] focus:ring-2 focus:ring-[#183a76]/20"
           />
         </div>
 
@@ -287,7 +287,7 @@ export default function ImportForm() {
           <button
             type="submit"
             disabled={pending}
-            className="rounded-md bg-zinc-900 px-4 py-2 text-base font-medium text-white disabled:opacity-60"
+            className="rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-base font-medium text-white disabled:opacity-60"
           >
             {pending ? "확인 중..." : "미리보기"}
           </button>

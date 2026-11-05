@@ -22,7 +22,7 @@ type ItemFormProps = {
 };
 
 const inputClass =
-  "w-full rounded-md border bg-white px-3 py-2 text-base text-zinc-900 outline-none focus:border-zinc-900";
+  "w-full rounded-md border bg-white px-3 py-2 text-base text-zinc-900 outline-none focus:border-[#183a76] focus:ring-2 focus:ring-[#183a76]/20";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
@@ -301,7 +301,7 @@ export default function ItemForm({
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-zinc-900 px-4 py-2 text-base font-medium text-white disabled:opacity-60"
+          className="rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-base font-medium text-white disabled:opacity-60"
         >
           {pending ? "저장 중..." : submitLabel}
         </button>

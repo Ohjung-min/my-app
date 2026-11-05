@@ -22,7 +22,7 @@ export default function ErrorPage({
         <button
           type="button"
           onClick={reset}
-          className="rounded-md bg-zinc-900 px-4 py-2 text-base font-medium text-white"
+          className="rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-base font-medium text-white"
         >
           다시 시도
         </button>

@@ -61,7 +61,7 @@ export default async function ItemsList({
           {filtered ? null : (
             <Link
               href="/items/new"
-              className="mt-4 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+              className="mt-4 inline-block rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-sm font-medium text-white"
             >
               + 물건 등록
             </Link>

@@ -23,7 +23,7 @@ export default function ItemsFilter({ filters }: { filters: ItemFilters }) {
           maxLength={MAX_SEARCH_LENGTH}
           defaultValue={filters.q ?? ""}
           placeholder="관리번호나 소재지의 일부를 입력"
-          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-900"
+          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-[#183a76] focus:ring-2 focus:ring-[#183a76]/20"
         />
       </div>
 
@@ -35,7 +35,7 @@ export default function ItemsFilter({ filters }: { filters: ItemFilters }) {
           id="status"
           name="status"
           defaultValue={filters.status ?? ""}
-          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-900"
+          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-[#183a76] focus:ring-2 focus:ring-[#183a76]/20"
         >
           <option value="">전체</option>
           {ITEM_STATUSES.map((status) => (
@@ -48,7 +48,7 @@ export default function ItemsFilter({ filters }: { filters: ItemFilters }) {
 
       <button
         type="submit"
-        className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+        className="rounded-md bg-[#183a76] hover:bg-[#122c5a] px-4 py-2 text-sm font-medium text-white"
       >
         검색
       </button>

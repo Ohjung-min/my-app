@@ -46,7 +46,7 @@ export default function Pagination({
         p === "gap" ? (
           <span key={`gap-${i}`} className={`${base} text-zinc-400`}>…</span>
         ) : p === page ? (
-          <span key={p} aria-current="page" className={`${base} bg-zinc-900 font-medium text-white`}>
+          <span key={p} aria-current="page" className={`${base} bg-[#183a76] hover:bg-[#122c5a] font-medium text-white`}>
             {p}
           </span>
         ) : (
