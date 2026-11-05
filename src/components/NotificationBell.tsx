@@ -108,7 +108,7 @@ export default function NotificationBell({ notifications }: Props) {
         aria-label={unread > 0 ? `알림 ${unread}건 안 읽음` : "알림"}
         aria-expanded={open}
         aria-haspopup="true"
-        className="relative rounded-md border border-zinc-300 px-2.5 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
+        className="relative rounded-md border border-white/40 bg-white px-2.5 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
       >
         <span aria-hidden="true">🔔</span>
         {unread > 0 ? (

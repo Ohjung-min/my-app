@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
+/* 첫 화면(유리 큐브)과 같은 테마: 캠코 남색 바탕 + 빨강 포인트, 내용은 흰 카드 (2026-11-05) */
 :root {
-  --background: #f3f6fb; /* 연한 푸른 회색 바탕: 흰 카드가 돋보이게 */
-  --foreground: #171717;
+  --background: #07142e; /* 어두운 캠코 남색 */
+  --foreground: #171717; /* 흰 카드 안의 글자색 */
+  --navy: #183a76;
+  --red: #ed1c24;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-noto-kr), var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #f3f6fb; /* 흰 카드 디자인이라 어두운 모드에서도 밝은 바탕 유지 */
-    --foreground: #ededed;
-  }
+body {
+  /* 가운데는 밝은 남색, 가장자리는 어두운 남색 (첫 화면 배경과 같은 느낌) */
+  background:
+    radial-gradient(ellipse at 50% 20%, #16356f 0%, #0a1f4a 45%, #06122b 100%) fixed,
+    var(--background);
+  color: #fff;
+  font-family: var(--font-noto-kr), "Noto Sans KR", "Malgun Gothic", sans-serif;
 }
 
-body {
-  background: var(--background);
+/* 각 화면의 본문(main)을 흰 카드로: 남색 바탕 위에서 표·입력칸이 또렷하게 보이게 한다 */
+main {
+  flex: none !important;
+  margin-top: 28px;
+  margin-bottom: 40px;
+  background: rgba(255, 255, 255, 0.97);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 20px;
+  box-shadow:
+    0 24px 60px -20px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+}
+
+/* 좁은 화면에서는 카드 양옆에 여백을 둔다 */
+@media (max-width: 1040px) {
+  main {
+    margin-left: 12px;
+    margin-right: 12px;
+    width: auto !important;
+  }
 }

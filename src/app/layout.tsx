@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_KR } from "next/font/google";
 import { Suspense } from "react";
 import AppHeader from "@/components/AppHeader";
 import "./globals.css";
@@ -14,6 +14,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// 첫 화면과 같은 한글 글꼴 (Noto Sans KR)
+const notoKr = Noto_Sans_KR({
+  variable: "--font-noto-kr",
+  weight: ["400", "500", "700", "900"],
+  subsets: ["latin"],
+  preload: false,
+});
+
 export const metadata: Metadata = {
   title: "공매 낙찰 물건 한눈에",
   description: "공매 낙찰 물건의 진행상황을 팀이 함께 관리하는 서비스",
@@ -24,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${notoKr.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* 알림을 불러오는 부분은 Suspense로 감싼다 (Next.js 16 Cache Components 규칙) */}
@@ -33,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Suspense>
         <div className="flex-1">{children}</div>
         {/* 공식 서비스로 오해하지 않도록 작게 안내한다 */}
-        <footer className="border-t border-zinc-200 py-4 text-center text-xs text-zinc-500">
+        <footer className="border-t border-white/10 py-4 text-center text-xs text-white/60">
           서울동부지역본부 팀 내부용 비공식 서비스입니다. 캠코 로고를 사용했지만 캠코의 공식 서비스가 아닙니다.
         </footer>
       </body>

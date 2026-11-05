@@ -12,7 +12,7 @@ export default async function AppHeader() {
 
   // 캠코 로고의 남색에 맞춰 위에 남색 선을 두고 깔끔한 흰 바탕으로 꾸민다 (2026-11-05)
   return (
-    <header className="border-b border-zinc-200 bg-white shadow-sm">
+    <header className="border-b border-white/10 bg-gradient-to-b from-[#0d2a63] to-[#07142e] shadow-lg">
       {/* 남색 → 빨강으로 이어지는 얇은 띠 (캠코 로고 색) */}
       <div className="h-2.5 bg-gradient-to-r from-[#183a76] via-[#183a76] to-[#ed1c24]" />
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-4 sm:py-6">
@@ -23,15 +23,15 @@ export default async function AppHeader() {
             alt="캠코 로고"
             width={150}
             height={96}
-            className="h-14 w-auto sm:h-24"
+            className="h-14 w-auto rounded-xl bg-white px-2 py-1 sm:h-24 sm:px-3 sm:py-2"
             priority
           />
           <span className="flex flex-col gap-1 leading-tight">
-            <span className="text-xl font-bold text-[#183a76] sm:text-3xl">
+            <span className="text-xl font-black text-white sm:text-3xl">
               공매 낙찰 물건 한눈에
             </span>
-            <span className="text-xs text-zinc-500 sm:text-base">
-              <strong className="font-semibold text-[#ed1c24]">서울동부지역본부</strong>
+            <span className="text-xs text-white/70 sm:text-base">
+              <strong className="font-bold text-white">서울동부지역본부</strong>
               {" · "}입찰부터 등기완료까지 진행상황을 함께 관리
             </span>
           </span>

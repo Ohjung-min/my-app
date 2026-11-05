@@ -55,7 +55,7 @@ async function StatusCards() {
 
 export default function HomePage() {
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-8 pt-20 sm:pt-28">
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-8 pt-8">
       <h1 className="mb-8 text-2xl font-bold sm:text-3xl">
         <Link
           href="/items"
