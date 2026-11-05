@@ -99,7 +99,7 @@ export async function previewImport(
 
   const rows: ImportPreviewRow[] = analysis.results.map((r) => ({
     rowNumber: r.rowNumber,
-    name: r.name,
+    label: r.label,
     status: r.status,
     messages: r.messages,
     values: r.values,
@@ -175,7 +175,6 @@ export async function commitImport(
 
   // 모든 줄이 같은 칸을 갖도록 맞춰 보낸다 (비운 선택 칸은 null)
   const payload = ready.map((d) => ({
-    name: d.name,
     status: d.status,
     notice_no: d.notice_no,
     category: d.category,

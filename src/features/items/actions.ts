@@ -19,7 +19,6 @@ import {
 
 /** 폼에서 읽어 올 입력 칸 이름 */
 const FIELDS: ItemFormField[] = [
-  "name",
   "status",
   "notice_no",
   "category",
@@ -39,7 +38,7 @@ export type ItemFormState = {
   values?: Partial<Record<ItemFormField, string>>;
   /** 같은 물건이 이미 있을 수 있을 때: 사용자가 "그래도 저장"을 고르기 전까지 저장하지 않는다 */
   duplicates?: DuplicateMatch[];
-  /** 경고를 띄운 입력(물건명·공고번호·낙찰일)의 표식. [그래도 저장]이 같은 입력인지 확인하는 데 쓴다 */
+  /** 경고를 띄운 입력(소재지·관리번호·낙찰일)의 표식. [그래도 저장]이 같은 입력인지 확인하는 데 쓴다 */
   duplicateKey?: string;
 };
 
@@ -80,8 +79,8 @@ async function checkDuplicates(
   values: FormValues,
   excludeId?: string,
 ): Promise<ItemFormState | null> {
-  // 중복 판단에 쓰는 값(물건명·공고번호·낙찰일). 경고를 띄울 때의 값과 같을 때만 "그래도 저장"을 믿는다.
-  // 경고를 본 뒤 물건명 등을 다른 값으로 고쳐 [그래도 저장]을 눌렀다면, 고친 값은 다시 확인한다
+  // 중복 판단에 쓰는 값(소재지·관리번호·낙찰일). 경고를 띄울 때의 값과 같을 때만 "그래도 저장"을 믿는다.
+  // 경고를 본 뒤 소재지 등을 다른 값으로 고쳐 [그래도 저장]을 눌렀다면, 고친 값은 다시 확인한다
   const key = duplicateKey(data);
   if (
     formData.get("confirm_duplicate") === "1" &&
@@ -93,7 +92,7 @@ async function checkDuplicates(
   const result = await findDuplicates(
     supabase,
     {
-      name: data.name,
+      location: data.location,
       notice_no: data.notice_no,
       awarded_on: data.awarded_on,
     },
@@ -115,7 +114,7 @@ async function checkDuplicates(
 
 /** 중복 판단에 쓰는 값을 하나의 글자로 묶는다 (경고 때와 "그래도 저장" 때 같은 입력인지 비교용) */
 function duplicateKey(data: ItemFormInput): string {
-  return [data.name, data.notice_no, data.awarded_on ?? ""].join("\u0000");
+  return [data.location, data.notice_no, data.awarded_on ?? ""].join("\u0000");
 }
 
 /** 저장 중 DB가 돌려준 오류를 화면에 보여 줄 문구로 바꾼다 */

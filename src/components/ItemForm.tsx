@@ -1,6 +1,6 @@
 "use client";
 
-// Design Ref: §3.3 — 물건 등록 화면의 입력 칸: 물건명, 진행상황, 공고번호, 물건 종류, 소재지 (* 필수)
+// Design Ref: §3.3 — 물건 등록 화면의 입력 칸: 관리번호, 소재지, 진행상황, 물건 종류 (* 필수). 2026-11-05 변경: 공고번호→관리번호로 이름 변경, 물건명 칸 삭제
 // + 낙찰일, 낙찰가, 매수자 이름: 낙찰·완납·등기소 접수·등기완료를 고르면 필수(*)가 되고, 입찰·유찰이면 선택 사항으로 흐리게 보인다 (작업 11번)
 // + 같은 물건이 이미 있을 수 있으면 경고 상자와 [그래도 저장] 버튼을 보여 준다 (작업 12번)
 // + 등록과 수정이 같은 폼을 쓴다: 수정은 저장 동작·버튼 글자·처음 값을 넘겨 받는다 (작업 13번)
@@ -58,21 +58,38 @@ export default function ItemForm({
 
   return (
     <form action={formAction} className="flex flex-col gap-5" noValidate>
-      {/* 물건명 */}
+      {/* 관리번호 (예전 이름: 공고번호). 목록에서도 맨 앞에 보이므로 폼에서도 맨 위에 둔다 */}
       <div>
-        <label htmlFor="name" className="mb-1 block text-sm font-medium">
-          물건명 <span className="text-red-600">*</span>
+        <label htmlFor="notice_no" className="mb-1 block text-sm font-medium">
+          관리번호 <span className="text-red-600">*</span>
         </label>
         <input
-          id="name"
-          name="name"
+          id="notice_no"
+          name="notice_no"
           type="text"
-          defaultValue={values.name}
-          aria-invalid={Boolean(errors.name)}
-          aria-describedby={errors.name ? "name-error" : undefined}
-          className={`${inputClass} ${borderOf("name")}`}
+          defaultValue={values.notice_no}
+          aria-invalid={Boolean(errors.notice_no)}
+          aria-describedby={errors.notice_no ? "notice_no-error" : undefined}
+          className={`${inputClass} ${borderOf("notice_no")}`}
         />
-        <FieldError id="name-error" message={errors.name} />
+        <FieldError id="notice_no-error" message={errors.notice_no} />
+      </div>
+
+      {/* 소재지: 목록에서 관리번호 아래에 보이므로 폼에서도 관리번호 바로 아래에 둔다 (물건명 칸은 2026-11-05에 없어졌다) */}
+      <div>
+        <label htmlFor="location" className="mb-1 block text-sm font-medium">
+          소재지 <span className="text-red-600">*</span>
+        </label>
+        <input
+          id="location"
+          name="location"
+          type="text"
+          defaultValue={values.location}
+          aria-invalid={Boolean(errors.location)}
+          aria-describedby={errors.location ? "location-error" : undefined}
+          className={`${inputClass} ${borderOf("location")}`}
+        />
+        <FieldError id="location-error" message={errors.location} />
       </div>
 
       {/* 진행상황 */}
@@ -98,23 +115,6 @@ export default function ItemForm({
         <FieldError id="status-error" message={errors.status} />
       </fieldset>
 
-      {/* 공고번호 */}
-      <div>
-        <label htmlFor="notice_no" className="mb-1 block text-sm font-medium">
-          공고번호 <span className="text-red-600">*</span>
-        </label>
-        <input
-          id="notice_no"
-          name="notice_no"
-          type="text"
-          defaultValue={values.notice_no}
-          aria-invalid={Boolean(errors.notice_no)}
-          aria-describedby={errors.notice_no ? "notice_no-error" : undefined}
-          className={`${inputClass} ${borderOf("notice_no")}`}
-        />
-        <FieldError id="notice_no-error" message={errors.notice_no} />
-      </div>
-
       {/* 물건 종류 */}
       <fieldset>
         <legend className="mb-1 text-sm font-medium">
@@ -136,23 +136,6 @@ export default function ItemForm({
         </div>
         <FieldError id="category-error" message={errors.category} />
       </fieldset>
-
-      {/* 소재지 */}
-      <div>
-        <label htmlFor="location" className="mb-1 block text-sm font-medium">
-          소재지 <span className="text-red-600">*</span>
-        </label>
-        <input
-          id="location"
-          name="location"
-          type="text"
-          defaultValue={values.location}
-          aria-invalid={Boolean(errors.location)}
-          aria-describedby={errors.location ? "location-error" : undefined}
-          className={`${inputClass} ${borderOf("location")}`}
-        />
-        <FieldError id="location-error" message={errors.location} />
-      </div>
 
       {/* 낙찰 이후 단계에서 쓰는 3칸 */}
       <div
@@ -271,8 +254,8 @@ export default function ItemForm({
         >
           <p className="font-semibold">중복일 수 있습니다. 그래도 저장할까요?</p>
           <p className="mt-1 text-amber-800">
-            같은 물건이 이미 등록되어 있습니다. (낙찰일이 있으면 물건명과 낙찰일이,
-            없으면 공고번호가 같을 때)
+            같은 물건이 이미 등록되어 있습니다. (낙찰일이 있으면 소재지와 낙찰일이,
+            없으면 관리번호가 같을 때)
           </p>
           <ul className="mt-2 flex flex-col gap-1.5">
             {state.duplicates.map((match) => (
@@ -281,9 +264,9 @@ export default function ItemForm({
                 className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-white px-3 py-2 text-zinc-900"
               >
                 <StatusBadge status={match.status} />
-                <span className="font-medium">{match.name}</span>
+                <span className="font-medium">{match.location}</span>
                 <span className="text-zinc-600">
-                  공고번호 {match.notice_no}
+                  관리번호 {match.notice_no}
                   {match.awarded_on ? ` · 낙찰일 ${match.awarded_on}` : ""}
                 </span>
               </li>

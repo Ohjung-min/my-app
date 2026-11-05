@@ -30,7 +30,6 @@ export default async function EditItemContent({
       action={updateItem.bind(null, item.id)}
       submitLabel="수정 저장"
       initialValues={{
-        name: item.name,
         status: item.status,
         notice_no: item.notice_no,
         category: item.category,

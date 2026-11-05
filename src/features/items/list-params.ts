@@ -1,4 +1,4 @@
-// Design Ref: §3.2 — 목록의 검색(물건명)·진행상황 필터. 조건은 주소(?q=…&status=…)에 담아서,
+// Design Ref: §3.2 — 목록의 검색(관리번호·소재지)·진행상황 필터. 조건은 주소(?q=…&status=…)에 담아서,
 // 새로고침·쪽 이동·링크 공유에도 같은 결과가 나오게 한다
 // 서버·화면 어디서나 쓰는 순수한 코드만 둔다 (DB 조회는 queries.ts)
 import { ITEM_STATUSES, type ItemStatus } from "@/types/item";
@@ -7,7 +7,7 @@ import { ITEM_STATUSES, type ItemStatus } from "@/types/item";
 export const MAX_SEARCH_LENGTH = 100;
 
 export type ItemFilters = {
-  /** 물건명에 들어 있는 글자 (비어 있으면 없음) */
+  /** 관리번호나 소재지에 들어 있는 글자 (비어 있으면 없음) */
   q?: string;
   /** 진행상황 하나 (없으면 전체) */
   status?: ItemStatus;
@@ -56,6 +56,17 @@ export function buildExportHref(filters: ItemFilters): string {
   if (filters.status) params.set("status", filters.status);
   const query = params.toString();
   return query ? `/items/export?${query}` : "/items/export";
+}
+
+/**
+ * 검색어가 관리번호나 소재지에 들어 있는 물건을 찾는 조건(PostgREST or 조건 글자)을 만든다.
+ * or(...) 안에서는 쉼표와 괄호가 구분 기호라서, 값 전체를 큰따옴표로 감싸고 \ 와 " 는 앞에 \ 를 붙인다.
+ * (검색어에 쉼표·괄호·따옴표·%·_ 가 들어 있어도 글자 그대로 찾는다)
+ */
+export function buildSearchFilter(q: string): string {
+  const pattern = `%${escapeLike(q)}%`;
+  const quoted = `"${pattern.replace(/[\\"]/g, (ch) => `\\${ch}`)}"`;
+  return `notice_no.ilike.${quoted},location.ilike.${quoted}`;
 }
 
 /**

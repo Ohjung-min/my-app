@@ -22,13 +22,15 @@ type ImportColumn = {
   aliases: string[];
 };
 
-/** 파일의 첫 줄(열 이름)로 받는 항목. DESIGN §5 일괄 등록 */
+/**
+ * 파일의 첫 줄(열 이름)로 받는 항목. DESIGN §5 일괄 등록
+ * (2026-11-05: 공고번호 → 관리번호로 이름이 바뀌었고, 옛 이름도 받아 준다. 물건명 열은 없어졌다)
+ */
 export const IMPORT_COLUMNS: ImportColumn[] = [
-  { field: "name", label: "물건명", required: true, aliases: [] },
-  { field: "status", label: "진행상황", required: true, aliases: ["단계"] },
-  { field: "notice_no", label: "공고번호", required: true, aliases: [] },
-  { field: "category", label: "물건 종류", required: true, aliases: ["물건종류", "종류"] },
+  { field: "notice_no", label: "관리번호", required: true, aliases: ["공고번호"] },
   { field: "location", label: "소재지", required: true, aliases: [] },
+  { field: "status", label: "진행상황", required: true, aliases: ["단계"] },
+  { field: "category", label: "물건 종류", required: true, aliases: ["물건종류", "종류"] },
   { field: "awarded_on", label: "낙찰일", required: false, aliases: [] },
   { field: "awarded_price", label: "낙찰가", required: false, aliases: ["낙찰가(원)"] },
   { field: "buyer_name", label: "매수자 이름", required: false, aliases: ["매수자", "매수자이름"] },
@@ -187,7 +189,6 @@ export function gridToRows(grid: string[][]): GridToRowsResult {
       return index === undefined ? "" : clean(cells[index]);
     };
     const values = {
-      name: get("name"),
       status: get("status"),
       notice_no: get("notice_no"),
       category: get("category"),

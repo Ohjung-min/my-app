@@ -1,12 +1,12 @@
 // Design Ref: §2.3, §5 — 목록 조회는 이 파일(데이터 처리)이 맡고, 화면은 Supabase를 직접 부르지 않는다
 // Design Ref: §5 — 목록 정렬: 1순위 진행 중(입찰·낙찰·완납·등기소 접수) 먼저 → 2순위 sort_date(낙찰일, 없으면 등록일) 최신순
 // 쪽 나누기는 이 순서대로 전체를 이어서 20건씩 자른다 (PRD 5번)
-// 물건명 검색과 진행상황 필터(작업 16번)를 적용한 결과도 같은 정렬·쪽 나누기를 쓴다
+// 검색(관리번호·소재지)과 진행상황 필터(작업 16번)를 적용한 결과도 같은 정렬·쪽 나누기를 쓴다
 // Plan SC: 4 — 한 화면에 20건씩, 3초 이내
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import type { ItemListRow } from "@/types/item";
-import { escapeLike, type ItemFilters } from "./list-params";
+import { buildSearchFilter, type ItemFilters } from "./list-params";
 
 /** 한 화면에 보여 주는 건수 (PRD 5번) */
 export const PAGE_SIZE = 20;
@@ -27,13 +27,12 @@ export type ItemsPage =
   | { ok: false };
 
 const LIST_COLUMNS =
-  "id, name, status, notice_no, category, location, awarded_on, awarded_price, buyer_name, sort_date";
+  "id, status, notice_no, category, location, awarded_on, awarded_price, buyer_name, sort_date";
 
 /** 수정 화면에 처음 채워 넣을 물건 한 건 (Design §3.3) */
 export type ItemForEdit = Pick<
   ItemListRow,
   | "id"
-  | "name"
   | "status"
   | "notice_no"
   | "category"
@@ -52,7 +51,7 @@ export type ItemForEditResult =
   | { status: "error" };
 
 const EDIT_COLUMNS =
-  "id, name, status, notice_no, category, location, awarded_on, awarded_price, buyer_name, memo";
+  "id, status, notice_no, category, location, awarded_on, awarded_price, buyer_name, memo";
 
 export async function getItemForEdit(id: string): Promise<ItemForEditResult> {
   // 주소의 id가 올바른 형식(UUID)이 아니면 DB에 묻지 않고 "없음"으로 본다
@@ -87,9 +86,9 @@ export async function getItemsPage(
         count: "exact",
         head: options.head,
       });
-    // 물건명 검색: 대소문자 구분 없이 글자가 들어 있으면 찾는다 (작업 16번)
+    // 검색: 관리번호나 소재지에 글자가 들어 있으면 대소문자 구분 없이 찾는다 (작업 16번, 2026-11-05 물건명 삭제로 변경)
     if (filters.q) {
-      query = query.ilike("name", `%${escapeLike(filters.q)}%`);
+      query = query.or(buildSearchFilter(filters.q));
     }
     // 진행상황 필터: 고른 단계 하나만 (작업 16번)
     if (filters.status) {

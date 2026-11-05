@@ -111,8 +111,8 @@ function PreviewResult({
             <tr>
               <th scope="col" className="px-3 py-2 font-medium">줄</th>
               <th scope="col" className="px-3 py-2 font-medium">결과</th>
-              <th scope="col" className="px-3 py-2 font-medium">물건명</th>
-              <th scope="col" className="px-3 py-2 font-medium">공고번호</th>
+              <th scope="col" className="px-3 py-2 font-medium">관리번호</th>
+              <th scope="col" className="px-3 py-2 font-medium">소재지</th>
               <th scope="col" className="px-3 py-2 font-medium">이유</th>
             </tr>
           </thead>
@@ -122,10 +122,10 @@ function PreviewResult({
                 <td className="whitespace-nowrap px-3 py-2 text-zinc-600">{row.rowNumber}</td>
                 <td className="whitespace-nowrap px-3 py-2"><RowBadge status={row.status} /></td>
                 <td className="px-3 py-2 font-medium">
-                  {row.name || <span className="text-zinc-400">(비어 있음)</span>}
+                  {row.values.notice_no || <span className="text-zinc-400">(비어 있음)</span>}
                 </td>
                 <td className="px-3 py-2">
-                  {row.values.notice_no || <span className="text-zinc-400">-</span>}
+                  {row.label || <span className="text-zinc-400">(비어 있음)</span>}
                 </td>
                 <td className="px-3 py-2 text-zinc-700">
                   {row.messages.length > 0 ? row.messages.join(" / ") : "-"}
@@ -179,7 +179,7 @@ export default function ImportForm() {
 
   const previewKey = state.preview
     ? state.preview.rows
-        .map((r) => `${r.rowNumber}:${r.status}:${r.name}`)
+        .map((r) => `${r.rowNumber}:${r.status}:${r.label}`)
         .join("|")
     : "none";
 

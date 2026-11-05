@@ -42,8 +42,8 @@ export type ItemCategory = (typeof ITEM_CATEGORIES)[number];
 /** 목록에 보여 주는 물건 한 건 */
 export type ItemListRow = {
   id: string;
-  name: string;
   status: ItemStatus;
+  /** 관리번호 (예전 이름: 공고번호) */
   notice_no: string;
   category: ItemCategory;
   location: string;

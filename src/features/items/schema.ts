@@ -1,5 +1,6 @@
 // Design Ref: §2.3 — 입력 규칙은 이 파일 한곳에 모아, 화면과 서버가 같은 규칙을 쓴다
-// PRD 5번 must 1 — 필수 입력은 물건명, 진행상황, 공고번호, 물건 종류, 소재지 5개. 하나라도 비면 저장하지 않는다
+// PRD 5번 must 1 — 필수 입력은 관리번호, 진행상황, 물건 종류, 소재지 4개. 하나라도 비면 저장하지 않는다
+// (2026-11-05: 공고번호는 이름이 관리번호로 바뀌었고, 물건명 칸은 없어졌다. DB 칸 이름 notice_no·location은 그대로)
 // 낙찰 이후 단계(낙찰·완납·등기소 접수·등기완료)에서는 낙찰일·낙찰가·매수자 이름도 필수 (작업 11번)
 import { z } from "zod";
 import { ITEM_CATEGORIES, ITEM_STATUSES, isAwardedStatus } from "@/types/item";
@@ -8,7 +9,6 @@ import { ITEM_CATEGORIES, ITEM_STATUSES, isAwardedStatus } from "@/types/item";
 export const MAX_MEMO_LENGTH = 1000;
 
 /** 칸별 최대 글자 수. 너무 긴 글이 저장되어 목록이 깨지는 것을 막는다 (2026-11-05 점검에서 추가) */
-export const MAX_NAME_LENGTH = 200;
 export const MAX_NOTICE_NO_LENGTH = 100;
 export const MAX_LOCATION_LENGTH = 200;
 export const MAX_BUYER_NAME_LENGTH = 100;
@@ -29,16 +29,11 @@ const optional = <T extends z.ZodType>(schema: T) =>
   );
 
 export const itemFormSchema = z.object({
-  name: requiredText(
-    "물건명을 입력해 주세요",
-    MAX_NAME_LENGTH,
-    `물건명은 ${MAX_NAME_LENGTH}자 이하로 입력해 주세요`,
-  ),
   status: z.enum(ITEM_STATUSES, { error: "진행상황을 선택해 주세요" }),
   notice_no: requiredText(
-    "공고번호를 입력해 주세요",
+    "관리번호를 입력해 주세요",
     MAX_NOTICE_NO_LENGTH,
-    `공고번호는 ${MAX_NOTICE_NO_LENGTH}자 이하로 입력해 주세요`,
+    `관리번호는 ${MAX_NOTICE_NO_LENGTH}자 이하로 입력해 주세요`,
   ),
   category: z.enum(ITEM_CATEGORIES, { error: "물건 종류를 선택해 주세요" }),
   location: requiredText(

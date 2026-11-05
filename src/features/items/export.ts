@@ -3,7 +3,7 @@
 // 매수자 이름은 파일에 안 넣는 데서 그치지 않고, 조회할 때 아예 가져오지 않는다.
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ItemFilters } from "./list-params";
-import { escapeLike } from "./list-params";
+import { buildSearchFilter } from "./list-params";
 import type { ItemStatus } from "@/types/item";
 
 /** 내려받을 수 있는 최대 건수. 이보다 많으면 검색 조건을 좁히도록 안내한다 */
@@ -15,7 +15,7 @@ const FETCH_SIZE = 1000;
 /** 내려받는 파일의 한 줄. 매수자 이름(buyer_name)과 메모는 의도적으로 없다 */
 export type ExportRow = {
   status: ItemStatus;
-  name: string;
+  /** 관리번호 */
   notice_no: string;
   category: string;
   location: string;
@@ -24,15 +24,14 @@ export type ExportRow = {
 };
 
 /** 조회할 칸. 여기에 buyer_name이 없다는 것이 PRD 7번 "파일에 매수자 이름 없음"의 핵심이다 */
-const EXPORT_COLUMNS = "status, name, notice_no, category, location, awarded_on, awarded_price";
+const EXPORT_COLUMNS = "status, notice_no, category, location, awarded_on, awarded_price";
 
-/** 파일의 열 (목록과 같은 순서에 공고번호를 더하고 매수자는 뺐다). 일괄 등록 열 이름과 같다 */
+/** 파일의 열: 목록과 같이 관리번호·소재지가 맨 앞이고 매수자는 뺐다. 일괄 등록 열 이름과 같다 */
 const SHEET_COLUMNS = [
-  { header: "진행상황", key: "status", width: 10 },
-  { header: "물건명", key: "name", width: 28 },
-  { header: "공고번호", key: "notice_no", width: 18 },
+  { header: "관리번호", key: "notice_no", width: 18 },
+  { header: "소재지", key: "location", width: 32 },
+  { header: "진행상황", key: "status", width: 12 },
   { header: "물건 종류", key: "category", width: 10 },
-  { header: "소재지", key: "location", width: 30 },
   { header: "낙찰일", key: "awarded_on", width: 12 },
   { header: "낙찰가", key: "awarded_price", width: 16 },
 ] as const;
@@ -50,7 +49,7 @@ export async function getItemsForExport(
 
   for (let from = 0; ; from += FETCH_SIZE) {
     let query = supabase.from("items").select(EXPORT_COLUMNS);
-    if (filters.q) query = query.ilike("name", `%${escapeLike(filters.q)}%`);
+    if (filters.q) query = query.or(buildSearchFilter(filters.q));
     if (filters.status) query = query.eq("status", filters.status);
 
     const { data, error } = await query
@@ -92,11 +91,10 @@ export async function buildItemsWorkbook(rows: ExportRow[]): Promise<Uint8Array>
 
   for (const row of rows) {
     sheet.addRow({
-      status: row.status,
-      name: row.name,
       notice_no: row.notice_no,
-      category: row.category,
       location: row.location,
+      status: row.status,
+      category: row.category,
       awarded_on: toExcelDate(row.awarded_on),
       awarded_price: row.awarded_price,
     });
