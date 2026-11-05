@@ -1,4 +1,4 @@
-// Design Ref: §3.4 — 일괄 등록 화면 (/items/import). 로그인한 팀원만 볼 수 있다 (proxy.ts가 막는다)
+// Design Ref: §3.4 — 일괄 등록 화면 (/items/import)
 import type { Metadata } from "next";
 import ImportForm from "@/components/ImportForm";
 

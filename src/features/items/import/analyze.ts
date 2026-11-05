@@ -101,17 +101,25 @@ export async function analyzeRows(
   });
 
   // 2) 파일 안에서 같은 물건이 두 번 나오면 뒤의 줄을 건너뛴다
+  //    DB와 비교할 때와 같은 기준이다: 낙찰일이 있으면 물건명+낙찰일, 낙찰일이 없으면 공고번호.
+  //    낙찰일이 없는 줄은 앞선 "모든" 줄(낙찰일이 있는 줄 포함)의 공고번호와 비교한다
   const firstSeen = new Map<string, number>();
+  const firstSeenNotice = new Map<string, number>();
   for (const result of results) {
     if (result.status !== "ok" || !result.data) continue;
     const key = keyOf(result.data);
-    const first = firstSeen.get(key);
+    const first = result.data.awarded_on
+      ? firstSeen.get(key)
+      : firstSeenNotice.get(result.data.notice_no);
     if (first !== undefined) {
       result.status = "duplicate";
       result.messages = [`파일 안의 ${first}번째 줄과 같은 물건입니다`];
       delete result.data;
     } else {
       firstSeen.set(key, result.rowNumber);
+      if (!firstSeenNotice.has(result.data.notice_no)) {
+        firstSeenNotice.set(result.data.notice_no, result.rowNumber);
+      }
     }
   }
 

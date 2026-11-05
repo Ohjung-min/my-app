@@ -1,11 +1,12 @@
 // Design Ref: §2.3 — Supabase 접속 코드는 src/lib/supabase/ 에 모은다
-// Design Ref: §2.1 — 서버(Next.js)는 "로그인한 사용자 권한"으로 Supabase에 요청한다
+// 로그인 없이 누구나 쓰는 서비스라서(2026-11-05 결정), 공개 키(anon)의 권한으로 Supabase에 요청한다.
+// 접근 규칙은 데이터베이스(supabase/migrations)가 정한다: 읽기·등록·수정 가능, 삭제 불가
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 /**
  * 서버(저장·조회 코드)에서 쓰는 Supabase 접속 도구를 만든다.
- * 브라우저의 로그인 정보(쿠키)를 읽어 로그인한 팀원 권한으로 요청한다.
+ * 요청마다 새로 읽어 오도록 쿠키 읽기를 거친다. (로그인 정보를 쓰지는 않는다)
  * Next.js 16에서는 cookies()가 비동기라서 await가 필요하다.
  */
 export async function createClient() {
@@ -31,8 +32,7 @@ export async function createClient() {
             cookieStore.set(name, value, options),
           );
         } catch {
-          // 화면(Server Component)에서 부르면 쿠키를 쓸 수 없어 여기로 온다.
-          // 로그인 상태 갱신은 proxy.ts(작업 4번)가 맡으므로 무시해도 된다.
+          // 화면(Server Component)에서 부르면 쿠키를 쓸 수 없어 여기로 온다. 무시해도 된다.
         }
       },
     },

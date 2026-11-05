@@ -1,20 +1,22 @@
 // Design Ref: §4.1 — 물건(items) 테이블의 데이터 모양. 화면과 데이터 처리 코드가 같은 이름을 쓰도록 한곳에 정의한다
 
-/** 진행상황 5단계 (PRD 5번). 테이블에서도 이 5개 값만 허용한다 */
+/** 진행상황 6단계 (PRD 5번, 2026-11-05 "등기소 접수" 추가). 테이블에서도 이 6개 값만 허용한다 */
 export const ITEM_STATUSES = [
   "입찰",
   "낙찰",
   "완납",
+  "등기소 접수",
   "등기완료",
   "유찰",
 ] as const;
 export type ItemStatus = (typeof ITEM_STATUSES)[number];
 
-/** 진행 중으로 보는 단계 (PRD 5번: 입찰·낙찰·완납). 나머지(등기완료·유찰)는 종료 */
+/** 진행 중으로 보는 단계 (PRD 5번: 입찰·낙찰·완납·등기소 접수). 나머지(등기완료·유찰)는 종료 */
 export const IN_PROGRESS_STATUSES: readonly ItemStatus[] = [
   "입찰",
   "낙찰",
   "완납",
+  "등기소 접수",
 ];
 
 export function isInProgress(status: ItemStatus): boolean {
@@ -25,6 +27,7 @@ export function isInProgress(status: ItemStatus): boolean {
 export const AWARDED_STATUSES: readonly ItemStatus[] = [
   "낙찰",
   "완납",
+  "등기소 접수",
   "등기완료",
 ];
 

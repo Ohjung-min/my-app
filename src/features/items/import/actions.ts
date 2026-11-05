@@ -3,7 +3,6 @@
 // Design Ref: §3.4, §5 — 일괄 등록: [미리보기] → 결과 요약(등록 가능 / 오류 / 건너뜀) → [등록]
 // 미리보기와 등록 모두 서버에서 같은 검사(analyzeRows)를 거친다. 등록할 때 화면이 보낸 값을 믿지 않고 다시 검사한다
 // 일괄 등록으로 새로 등록되는 물건에는 알림을 남기지 않는다 (PRD: 알림은 진행상황이 바뀔 때만)
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { analyzeRows, type ImportRowResult } from "./analyze";
 import {
@@ -189,7 +188,12 @@ export async function commitImport(
 
   const { error: insertError } = await supabase.from("items").insert(payload);
   if (insertError) {
-    if (insertError.code === "42501") redirect("/login");
+    if (insertError.code === "42501") {
+      return {
+        error:
+          "저장할 권한이 없습니다. 서비스 설정 문제일 수 있으니 관리자에게 알려 주세요",
+      };
+    }
     return {
       error: "저장하지 못했습니다. 한 건도 등록되지 않았으니 잠시 후 다시 시도해 주세요",
     };

@@ -1,6 +1,7 @@
 // Design Ref: §3.2 — 물건 목록 화면의 본문: 검색 상자, 표, 쪽 번호, 빈 화면, 오류 안내
 // Design Ref: §6 — 불러오지 못하면 "잠시 후 다시 시도해 주세요"를 보여 준다
 // 검색·필터(작업 16번)는 주소의 ?q=, ?status= 로 받는다
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import ItemsFilter from "@/components/ItemsFilter";
 import ItemsTable from "@/components/ItemsTable";
@@ -51,11 +52,21 @@ export default async function ItemsList({
       <ItemsFilter filters={filters} />
 
       {result.total === 0 ? (
-        <p className="rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-10 text-center text-sm text-zinc-600">
-          {filtered
-            ? "조건에 맞는 물건이 없습니다. 검색어나 진행상황을 바꿔 보세요."
-            : "아직 등록된 물건이 없습니다."}
-        </p>
+        <div className="rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-10 text-center text-sm text-zinc-600">
+          <p>
+            {filtered
+              ? "조건에 맞는 물건이 없습니다. 검색어나 진행상황을 바꿔 보세요."
+              : "아직 등록된 물건이 없습니다."}
+          </p>
+          {filtered ? null : (
+            <Link
+              href="/items/new"
+              className="mt-4 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+            >
+              + 물건 등록
+            </Link>
+          )}
+        </div>
       ) : (
         <>
           <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">

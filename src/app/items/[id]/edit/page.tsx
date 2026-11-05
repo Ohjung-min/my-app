@@ -1,5 +1,4 @@
 // Design Ref: §3.3 — 물건 수정 화면 (/items/[id]/edit). 수정 화면이 물건 상세 확인을 겸한다
-// 로그인한 팀원만 볼 수 있다 (proxy.ts가 막는다)
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import EditItemContent from "@/components/EditItemContent";

@@ -6,8 +6,11 @@ import type { ItemFormField } from "@/features/items/schema";
 export const MAX_IMPORT_ROWS = 200;
 /** 파일 최대 크기. Server Action 본문 한도(1MB)보다 작게 잡는다 */
 export const MAX_IMPORT_FILE_BYTES = 800 * 1024;
-/** 붙여넣은 글 최대 글자 수 */
-export const MAX_IMPORT_TEXT_LENGTH = 500_000;
+/**
+ * 붙여넣은 글 최대 글자 수.
+ * Server Action 본문 한도(1MB)를 넘지 않게, 한글이 한 글자에 3바이트인 것을 감안해 잡았다 (30만 자 × 3 = 약 900KB)
+ */
+export const MAX_IMPORT_TEXT_LENGTH = 300_000;
 
 type ImportColumn = {
   field: ItemFormField;

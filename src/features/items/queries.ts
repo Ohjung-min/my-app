@@ -1,5 +1,5 @@
 // Design Ref: §2.3, §5 — 목록 조회는 이 파일(데이터 처리)이 맡고, 화면은 Supabase를 직접 부르지 않는다
-// Design Ref: §5 — 목록 정렬: 1순위 진행 중(입찰·낙찰·완납) 먼저 → 2순위 sort_date(낙찰일, 없으면 등록일) 최신순
+// Design Ref: §5 — 목록 정렬: 1순위 진행 중(입찰·낙찰·완납·등기소 접수) 먼저 → 2순위 sort_date(낙찰일, 없으면 등록일) 최신순
 // 쪽 나누기는 이 순서대로 전체를 이어서 20건씩 자른다 (PRD 5번)
 // 물건명 검색과 진행상황 필터(작업 16번)를 적용한 결과도 같은 정렬·쪽 나누기를 쓴다
 // Plan SC: 4 — 한 화면에 20건씩, 3초 이내
@@ -79,26 +79,46 @@ export async function getItemsPage(
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  let query = supabase
-    .from("items")
-    .select(LIST_COLUMNS, { count: "exact" });
+  /** 검색·필터 조건을 건 조회. 목록과 건수 세기가 같은 조건을 쓰도록 한곳에 둔다 */
+  const filteredQuery = (options: { head?: boolean } = {}) => {
+    let query = supabase
+      .from("items")
+      .select(options.head ? "id" : LIST_COLUMNS, {
+        count: "exact",
+        head: options.head,
+      });
+    // 물건명 검색: 대소문자 구분 없이 글자가 들어 있으면 찾는다 (작업 16번)
+    if (filters.q) {
+      query = query.ilike("name", `%${escapeLike(filters.q)}%`);
+    }
+    // 진행상황 필터: 고른 단계 하나만 (작업 16번)
+    if (filters.status) {
+      query = query.eq("status", filters.status);
+    }
+    return query;
+  };
 
-  // 물건명 검색: 대소문자 구분 없이 글자가 들어 있으면 찾는다 (작업 16번)
-  if (filters.q) {
-    query = query.ilike("name", `%${escapeLike(filters.q)}%`);
-  }
-  // 진행상황 필터: 고른 단계 하나만 (작업 16번)
-  if (filters.status) {
-    query = query.eq("status", filters.status);
-  }
-
-  const { data, count, error } = await query
+  const { data, count, error } = await filteredQuery()
     // 진행 중(true)이 먼저 오도록 내림차순
     .order("is_in_progress", { ascending: false })
     .order("sort_date", { ascending: false })
     // 같은 날짜끼리는 먼저 등록한 것이 뒤로 가도록 등록 시각으로 한 번 더 정렬한다
     .order("created_at", { ascending: false })
     .range(from, to);
+
+  // 쪽 번호가 전체 건수보다 크면 Supabase가 "요청한 범위가 없다"(PGRST103)는 오류를 돌려준다.
+  // 오류 화면 대신, 건수만 다시 세어서 돌려주면 화면이 마지막 쪽으로 보내 준다
+  if (error?.code === "PGRST103") {
+    const { count: total, error: countError } = await filteredQuery({ head: true });
+    if (countError) return { ok: false };
+    return {
+      ok: true,
+      items: [],
+      total: total ?? 0,
+      page,
+      pageCount: getPageCount(total ?? 0),
+    };
+  }
 
   if (error) {
     return { ok: false };
@@ -107,7 +127,8 @@ export async function getItemsPage(
   const total = count ?? 0;
   return {
     ok: true,
-    items: (data ?? []) as ItemListRow[],
+    // 조회하는 칸이 상황에 따라 달라 Supabase가 모양을 미리 알 수 없어서, LIST_COLUMNS의 모양으로 직접 지정한다
+    items: (data ?? []) as unknown as ItemListRow[],
     total,
     page,
     pageCount: getPageCount(total),

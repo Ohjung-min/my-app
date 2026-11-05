@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: "공매 낙찰 물건의 진행상황을 팀이 함께 관리하는 서비스",
 };
 
-// Design Ref: §2.3 — layout.tsx는 모든 화면의 공통 틀(상단 메뉴·로그아웃)을 맡는다
+// Design Ref: §2.3 — layout.tsx는 모든 화면의 공통 틀(상단 메뉴·알림 종)을 맡는다
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {/* 로그인 정보를 읽는 부분은 Suspense로 감싼다 (Next.js 16 Cache Components 규칙) */}
+        {/* 알림을 불러오는 부분은 Suspense로 감싼다 (Next.js 16 Cache Components 규칙) */}
         <Suspense fallback={null}>
           <AppHeader />
         </Suspense>

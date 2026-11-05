@@ -1,4 +1,4 @@
-// Design Ref: §3.3 — 물건 등록 화면 (/items/new). 로그인한 팀원만 볼 수 있다 (proxy.ts가 막는다)
+// Design Ref: §3.3 — 물건 등록 화면 (/items/new)
 import type { Metadata } from "next";
 import ItemForm from "@/components/ItemForm";
 

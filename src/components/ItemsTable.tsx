@@ -1,5 +1,5 @@
 // Design Ref: §3.2 — 물건 목록 표: 단계 배지, 물건명, 종류, 소재지, 낙찰일, 낙찰가, 매수자
-// 진행 중(입찰·낙찰·완납) 물건이 먼저 나오고, 그 뒤에 종료(등기완료·유찰) 물건이 나온다.
+// 진행 중(입찰·낙찰·완납·등기소 접수) 물건이 먼저 나오고, 그 뒤에 종료(등기완료·유찰) 물건이 나온다.
 // 20건씩 쪽을 나누므로, 그룹이 바뀌는 곳과 각 쪽의 첫 줄에 그룹 제목 줄을 넣는다.
 import Link from "next/link";
 import StatusBadge from "@/components/StatusBadge";
@@ -12,7 +12,9 @@ function formatPrice(price: number | null) {
 }
 
 function groupTitle(inProgress: boolean) {
-  return inProgress ? "진행 중 (입찰·낙찰·완납)" : "종료 (등기완료·유찰)";
+  return inProgress
+    ? "진행 중 (입찰·낙찰·완납·등기소 접수)"
+    : "종료 (등기완료·유찰)";
 }
 
 export default function ItemsTable({ items }: { items: ItemListRow[] }) {

@@ -2,10 +2,11 @@
 
 // Design Ref: §5 — 물건 저장·수정은 서버에서 실행되는 동작(Server Action)으로 처리한다: 규칙 검사 → 중복 확인 → 저장
 // Design Ref: §6 — 필수 칸이 비면 저장하지 않고 칸별 오류 문구를 보여 준다. 입력한 값은 지우지 않는다
-// 낙찰·완납·등기완료의 필수 3칸 검사는 schema.ts에 있다 (작업 11번)
+// 낙찰 이후 단계(낙찰·완납·등기소 접수·등기완료)의 필수 3칸 검사는 schema.ts에 있다 (작업 11번)
 // 중복 확인(작업 12번): 같은 물건이 있을 수 있으면 저장하지 않고 경고를 돌려주며, 사용자가 "그래도 저장"을 누르면 저장한다
 // 수정(작업 13번): 진행상황을 어느 단계로든 바꿀 수 있다 (PRD 5번). 단계 변경 알림은 작업 17번에서 더한다
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -38,6 +39,8 @@ export type ItemFormState = {
   values?: Partial<Record<ItemFormField, string>>;
   /** 같은 물건이 이미 있을 수 있을 때: 사용자가 "그래도 저장"을 고르기 전까지 저장하지 않는다 */
   duplicates?: DuplicateMatch[];
+  /** 경고를 띄운 입력(물건명·공고번호·낙찰일)의 표식. [그래도 저장]이 같은 입력인지 확인하는 데 쓴다 */
+  duplicateKey?: string;
 };
 
 type FormValues = Record<ItemFormField, string>;
@@ -77,7 +80,15 @@ async function checkDuplicates(
   values: FormValues,
   excludeId?: string,
 ): Promise<ItemFormState | null> {
-  if (formData.get("confirm_duplicate") === "1") return null;
+  // 중복 판단에 쓰는 값(물건명·공고번호·낙찰일). 경고를 띄울 때의 값과 같을 때만 "그래도 저장"을 믿는다.
+  // 경고를 본 뒤 물건명 등을 다른 값으로 고쳐 [그래도 저장]을 눌렀다면, 고친 값은 다시 확인한다
+  const key = duplicateKey(data);
+  if (
+    formData.get("confirm_duplicate") === "1" &&
+    formData.get("duplicate_key") === key
+  ) {
+    return null;
+  }
 
   const result = await findDuplicates(
     supabase,
@@ -97,9 +108,14 @@ async function checkDuplicates(
     };
   }
   if (result.matches.length > 0) {
-    return { duplicates: result.matches, values };
+    return { duplicates: result.matches, duplicateKey: key, values };
   }
   return null;
+}
+
+/** 중복 판단에 쓰는 값을 하나의 글자로 묶는다 (경고 때와 "그래도 저장" 때 같은 입력인지 비교용) */
+function duplicateKey(data: ItemFormInput): string {
+  return [data.name, data.notice_no, data.awarded_on ?? ""].join("\u0000");
 }
 
 /** 저장 중 DB가 돌려준 오류를 화면에 보여 줄 문구로 바꾼다 */
@@ -107,18 +123,22 @@ function saveErrorState(
   error: { code?: string; message: string },
   values: FormValues,
 ): ItemFormState {
-  // 로그인이 풀렸거나 권한이 없을 때
+  // 데이터베이스가 쓰기 권한이 없다고 거절했을 때 (접근 규칙 설정 문제)
   if (error.code === "42501") {
-    redirect("/login");
+    return {
+      formError:
+        "저장할 권한이 없습니다. 서비스 설정 문제일 수 있으니 관리자에게 알려 주세요",
+      values,
+    };
   }
-  // 낙찰·완납·등기완료인데 낙찰일·낙찰가·매수자 이름이 비어 있을 때 (DB 규칙에 걸림)
+  // 낙찰·완납·등기소 접수·등기완료인데 낙찰일·낙찰가·매수자 이름이 비어 있을 때 (DB 규칙에 걸림)
   if (
     error.code === "23514" &&
     error.message.includes("items_awarded_fields_check")
   ) {
     return {
       formError:
-        "낙찰·완납·등기완료 단계에서는 낙찰일, 낙찰가, 매수자 이름을 모두 입력해야 합니다",
+        "낙찰·완납·등기소 접수·등기완료 단계에서는 낙찰일, 낙찰가, 매수자 이름을 모두 입력해야 합니다",
       values,
     };
   }
@@ -206,5 +226,8 @@ export async function updateItem(
     };
   }
 
+  // 진행상황이 바뀌면 데이터베이스가 알림을 남긴다. 상단 알림 종은 모든 화면에 공통인 틀이라
+  // 목록으로 이동만 해서는 갱신되지 않으므로, 화면 캐시를 새로 고쳐 바뀐 알림 개수를 바로 보이게 한다
+  refresh();
   redirect("/");
 }

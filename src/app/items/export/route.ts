@@ -1,5 +1,5 @@
 // Design Ref: §5 — 엑셀 내려받기 주소 (/items/export?q=…&status=…). 현재 검색·필터 결과 전체를 .xlsx로 내려 준다 (작업 18번)
-// Design Ref: §7 — 로그인한 팀원만 받을 수 있다: proxy.ts가 한 번 막고, 여기서 로그인을 한 번 더 확인한다 (두 겹)
+// 로그인 없이 누구나 쓰는 서비스라서 로그인 확인은 없다 (2026-11-05 결정)
 // PRD 7번 — 파일에 매수자 이름을 넣지 않는다 (export.ts가 조회 단계에서부터 가져오지 않는다)
 import type { NextRequest } from "next/server";
 import { buildItemsWorkbook, exportFileName, getItemsForExport, MAX_EXPORT_ROWS } from "@/features/items/export";
@@ -19,14 +19,6 @@ function textError(message: string, status: number) {
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
-
-  // 로그인 확인 (proxy.ts를 통과했더라도 서버에서 다시 확인한다)
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return textError("로그인이 필요합니다.", 401);
-  }
 
   const { searchParams } = request.nextUrl;
   const filters = parseFilters({

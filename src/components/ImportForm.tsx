@@ -3,7 +3,7 @@
 // Design Ref: §3.4 — 일괄 등록 화면: 붙여넣기 칸 또는 파일 선택 → [미리보기] → 결과 요약(등록 가능 / 오류 / 건너뜀) → [등록]
 // 오류가 있는 줄은 이유와 함께 보여 주고, 오류 줄은 건너뛰고 나머지만 등록할 수 있다
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import {
   commitImport,
   previewImport,
@@ -15,6 +15,7 @@ import {
   IMPORT_COLUMNS,
   MAX_IMPORT_FILE_BYTES,
   MAX_IMPORT_ROWS,
+  MAX_IMPORT_TEXT_LENGTH,
 } from "@/features/items/import/parse";
 
 const previewInitial: ImportPreviewState = {};
@@ -170,6 +171,12 @@ export default function ImportForm() {
     previewInitial,
   );
 
+  // 붙여넣은 글은 직접 관리해서, 미리보기·오류 뒤에도 지워지지 않게 한다
+  // (직접 관리하지 않는 입력칸은 폼을 보낸 뒤 React가 비워 버린다)
+  const [pasted, setPasted] = useState("");
+  // 파일이 너무 크면 서버로 보내기 전에 화면에서 먼저 알려 준다 (서버는 1MB가 넘는 요청을 안내 없이 거부한다)
+  const [fileError, setFileError] = useState("");
+
   const previewKey = state.preview
     ? state.preview.rows
         .map((r) => `${r.rowNumber}:${r.status}:${r.name}`)
@@ -196,7 +203,7 @@ export default function ImportForm() {
             {IMPORT_COLUMNS.filter((c) => !c.required)
               .map((c) => c.label)
               .join(", ")}{" "}
-            (진행상황이 낙찰·완납·등기완료이면 낙찰일·낙찰가·매수자 이름도 필요)
+            (진행상황이 낙찰·완납·등기소 접수·등기완료이면 낙찰일·낙찰가·매수자 이름도 필요)
           </li>
           <li>
             한 번에 {MAX_IMPORT_ROWS}건까지, 파일은{" "}
@@ -222,6 +229,9 @@ export default function ImportForm() {
             id="pasted"
             name="pasted"
             rows={8}
+            value={pasted}
+            onChange={(event) => setPasted(event.target.value)}
+            maxLength={MAX_IMPORT_TEXT_LENGTH}
             placeholder={IMPORT_COLUMNS.map((c) => c.label).join("\t")}
             className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 font-mono text-sm text-zinc-900 outline-none focus:border-zinc-900"
           />
@@ -236,9 +246,29 @@ export default function ImportForm() {
             name="file"
             type="file"
             accept=".xlsx,.csv,.txt"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file && file.size > MAX_IMPORT_FILE_BYTES) {
+                setFileError(
+                  `파일이 너무 큽니다. ${Math.floor(MAX_IMPORT_FILE_BYTES / 1024)}KB 이하로 올려 주세요`,
+                );
+                event.target.value = "";
+              } else {
+                setFileError("");
+              }
+            }}
+            aria-describedby={fileError ? "file-error" : undefined}
             className="block w-full text-sm text-zinc-700 file:mr-3 file:rounded-md file:border file:border-zinc-300 file:bg-white file:px-3 file:py-2 file:text-sm"
           />
-          <p className="mt-1 text-xs text-zinc-500">붙여넣기와 파일 중 하나만 사용해 주세요.</p>
+          {fileError ? (
+            <p id="file-error" role="alert" className="mt-1 text-sm text-red-600">
+              {fileError}
+            </p>
+          ) : null}
+          <p className="mt-1 text-xs text-zinc-500">
+            붙여넣기와 파일 중 하나만 사용해 주세요. 오류가 나면 파일은 다시 선택해
+            주세요.
+          </p>
         </div>
 
         {state.error ? (

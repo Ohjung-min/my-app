@@ -1,4 +1,4 @@
-// Design Ref: §3.2 — 물건 목록 화면 (/). 로그인한 팀원의 첫 화면
+// Design Ref: §3.2 — 물건 목록 화면 (/). 서비스의 첫 화면 (로그인 없이 누구나 볼 수 있다)
 // 주소의 ?page= 값을 읽는 부분은 Suspense로 감싸야 한다 (Next.js 16 Cache Components 규칙)
 import Link from "next/link";
 import { Suspense } from "react";
