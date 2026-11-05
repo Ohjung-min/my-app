@@ -54,13 +54,13 @@ async function StatusCards() {
 
 export default function HomePage() {
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold sm:text-3xl">
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-8 pt-20 sm:pt-28">
+      <h1 className="mb-8 text-2xl font-bold sm:text-3xl">
         <Link
           href="/items"
           className="text-[#183a76] underline-offset-4 hover:underline"
         >
-          공매 낙찰 물건 한눈에 →
+          공매 낙찰 물건 한눈에
         </Link>
       </h1>
 
