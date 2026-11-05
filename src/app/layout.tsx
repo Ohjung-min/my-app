@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="flex-1">{children}</div>
         {/* 공식 서비스로 오해하지 않도록 작게 안내한다 */}
         <footer className="border-t border-zinc-200 py-4 text-center text-xs text-zinc-500">
-          캠코 로고를 사용한 팀 내부용 비공식 서비스입니다. 캠코와 직접 관련이 없습니다.
+          서울동부지역본부 팀 내부용 비공식 서비스입니다. 캠코 로고를 사용했지만 캠코의 공식 서비스가 아닙니다.
         </footer>
       </body>
     </html>
