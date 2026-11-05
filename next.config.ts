@@ -5,6 +5,13 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   cacheComponents: true,
   partialPrefetching: true,
+  // 첫 화면(/)은 public/design-world/index.html(유리 큐브 디자인)을 보여 준다 (2026-11-05 요청)
+  // 진행상황별 건수 화면은 /status, 물건 목록은 /items
+  async rewrites() {
+    return {
+      beforeFiles: [{ source: "/", destination: "/design-world/index.html" }],
+    };
+  },
   turbopack: {
     rules: {
       "*.css": {
